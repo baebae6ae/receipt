@@ -9,13 +9,41 @@
 - [ ] **개인정보처리방침**: `docs/privacy-policy.md` 의 시행일·연락처를 채우고 공개 URL 에 게시.
 - [ ] **앱 이름**: `app_name`(ko/en), 워터마크 문구 `card_watermark`, 갤러리 폴더 `gallery_folder`.
 
-## 서명·빌드
+## 서명·빌드 (AAB)
 
-- [ ] 업로드 키 생성, Play App Signing 사용
-- [ ] `./gradlew bundleRelease` (R8 축소 켜져 있음) 후 실제 기기에서 release 빌드 동작 확인
+플레이 스토어에는 **AAB** 만 올릴 수 있다. GitHub Actions(`Android build`)가 push 마다 `app-release.aab` 를 만든다.
+업로드 키가 등록돼 있지 않으면 debug 키로 서명돼 아티팩트 이름이 `nalabel-release-aab-debug-NOT-for-upload` 로 나오고, 이 파일은 플레이 콘솔이 거부한다.
+
+### 업로드 키 만들기 (한 번만, 본인 컴퓨터에서)
+
+- [ ] 키 만들기. JDK 가 있는 컴퓨터에서 (Android Studio 를 설치했다면 Build → Generate Signed App Bundle → Create new 로도 가능):
+      ```
+      keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+      ```
+      비밀번호 두 개(키 저장소, 키)를 정하게 된다. **`upload.jks` 와 비밀번호는 저장소에 절대 올리지 말고 따로 백업.**
+- [ ] 키 파일을 base64 텍스트로 바꾸기
+      - Mac: `base64 -i upload.jks | pbcopy`
+      - Windows PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("upload.jks")) | Set-Clipboard`
+- [ ] GitHub 저장소 → Settings → Secrets and variables → Actions → New repository secret 으로 4개 등록
+      | 이름 | 값 |
+      |---|---|
+      | `UPLOAD_KEYSTORE_BASE64` | 위에서 복사한 base64 텍스트 |
+      | `UPLOAD_KEYSTORE_PASSWORD` | 키 저장소 비밀번호 |
+      | `UPLOAD_KEY_ALIAS` | `upload` |
+      | `UPLOAD_KEY_PASSWORD` | 키 비밀번호 |
+- [ ] 다음 빌드부터 아티팩트 이름이 `nalabel-release-aab-upload` 로 나오면 성공. 이 파일을 플레이 콘솔에 올린다.
+
+### 플레이 콘솔
+
+- [ ] **Play App Signing** 사용(기본값). 실제 앱 서명 키는 구글이 보관하고, 위 키는 '업로드 키'로만 쓰인다.
+      업로드 키를 잃어버려도 콘솔에서 재설정을 요청할 수 있다.
+- [ ] 올릴 때마다 `app/build.gradle.kts` 의 `versionCode` 를 1 씩 올린다(같은 번호는 거부됨).
 - [ ] Room 스키마(`app/schemas/`)를 커밋해 두고, 이후 DB 변경 시 마이그레이션 작성
 
-## 실기기 확인 (이 저장소의 코드는 Android SDK 없이 작성·검증됨)
+## 실기기 확인
+
+CI 가 매 push 마다 release 빌드를 안드로이드 14 에뮬레이터에서 처음부터 끝까지 눌러 본다(스크린샷: `ci-screens` 브랜치).
+에뮬레이터로 확인할 수 없는 것만 실제 폰으로 확인하면 된다.
 
 - [ ] Android 9 / 10 / 14 / 15 이상에서 사용 기록 권한 화면 이동, 걸음 권한, 알림 권한
 - [ ] 제조사별(삼성, 샤오미 등) 사용 기록 접근 설정 화면 진입
