@@ -33,6 +33,7 @@ import com.baebae.receipt.appContainer
 import com.baebae.receipt.data.StoredCard
 import com.baebae.receipt.domain.ItemKeys
 import com.baebae.receipt.domain.LabelCard
+import com.baebae.receipt.domain.phrase.PhraseCategory
 import com.baebae.receipt.ui.card.CardExportBar
 import com.baebae.receipt.ui.card.CardFormat
 import com.baebae.receipt.ui.card.CardTemplate
@@ -142,11 +143,12 @@ private fun ResultContent(stored: StoredCard, onChange: (StoredCard) -> Unit) {
                 update(stored.copy(hidden = if (visible) stored.hidden - key else stored.hidden + key))
             },
             onShowAll = { update(stored.copy(hidden = emptySet())) },
+            onReroll = { category -> scope.launch { onChange(cards.reroll(stored, category)) } },
         )
     }
 }
 
-private class EditItem(val key: String, val label: String)
+private class EditItem(val key: String, val label: String, val rerollCategory: String? = null)
 
 @Composable
 private fun EditList(
@@ -154,6 +156,7 @@ private fun EditList(
     hidden: Set<String>,
     onToggle: (key: String, visible: Boolean) -> Unit,
     onShowAll: () -> Unit,
+    onReroll: (category: String) -> Unit,
 ) {
     val items = buildList {
         card.ingredients.forEach { add(EditItem(it.key, stringResource(R.string.result_edit_ingredient, CardText.ingredientName(it)))) }
@@ -161,9 +164,9 @@ private fun EditList(
         add(EditItem(ItemKeys.UNLOCKS, stringResource(R.string.nutrition_unlocks)))
         add(EditItem(ItemKeys.STEPS, stringResource(R.string.nutrition_steps)))
         add(EditItem(ItemKeys.SLEEP, stringResource(R.string.nutrition_sleep)))
-        add(EditItem(ItemKeys.STORAGE, stringResource(R.string.card_row_storage)))
-        add(EditItem(ItemKeys.CAUTION, stringResource(R.string.card_row_caution)))
-        add(EditItem(ItemKeys.EXPIRY, stringResource(R.string.card_row_expiry)))
+        add(EditItem(ItemKeys.STORAGE, stringResource(R.string.card_row_storage), PhraseCategory.STORAGE))
+        add(EditItem(ItemKeys.CAUTION, stringResource(R.string.card_row_caution), PhraseCategory.CAUTION))
+        add(EditItem(ItemKeys.EXPIRY, stringResource(R.string.card_row_expiry), PhraseCategory.EXPIRY))
     }
     Column(modifier = Modifier.fillMaxWidth()) {
         items.forEach { item ->
@@ -171,6 +174,11 @@ private fun EditList(
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Checkbox(checked = visible, onCheckedChange = { onToggle(item.key, it) })
                 Text(text = item.label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                if (item.rerollCategory != null) {
+                    TextButton(onClick = { onReroll(item.rerollCategory) }, enabled = visible) {
+                        Text(stringResource(R.string.result_reroll))
+                    }
+                }
             }
         }
         TextButton(onClick = onShowAll, enabled = hidden.isNotEmpty()) {

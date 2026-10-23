@@ -42,7 +42,6 @@ import com.baebae.receipt.ui.card.ScaledCard
 import com.baebae.receipt.ui.card.exportFileName
 import com.baebae.receipt.ui.card.recordInto
 import com.baebae.receipt.ui.card.rememberCardLayer
-import com.baebae.receipt.ui.card.rememberSamplePhrases
 import com.baebae.receipt.util.WeekMath
 
 private enum class Stage { INTRO, PRIVACY, QUIZ, RESULT }
@@ -151,13 +150,15 @@ private fun QuizPage(index: Int, onAnswer: (Int) -> Unit) {
 
 @Composable
 private fun QuizResultPage(answers: IntArray, onConnectRealData: () -> Unit, onSkip: () -> Unit) {
-    val prefs = appContainer().prefs
-    val productName = prefs.nickname.ifEmpty { stringResource(R.string.default_nickname) }
+    val container = appContainer()
+    val productName = container.prefs.nickname.ifEmpty { stringResource(R.string.default_nickname) }
     val categoryLabels = stringArrayResource(R.array.quiz_app_labels)
-    val phrases = rememberSamplePhrases()
-    val card = remember(answers.toList(), productName, phrases) {
+    val card = remember(answers.toList(), productName) {
         val stats = Quiz.toStats(answers.toList(), WeekMath.currentWeekStart()) { categoryLabels[it.ordinal] }
-        LabelBuilder.build(stats, productName, phrases)
+        // 같은 응답이면 같은 문구가 나오도록 응답으로 시드를 만든다.
+        val seed = answers.fold(17L) { acc, a -> acc * 31 + a }
+        val phrases = container.phrases.preview(stats, seed)
+        LabelBuilder.build(stats, productName, phrases, topAppFallback = container.phrases.topAppFallback())
     }
     val layer = rememberCardLayer()
 

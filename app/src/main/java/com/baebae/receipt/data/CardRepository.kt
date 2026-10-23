@@ -39,8 +39,21 @@ class CardRepository(
     fun productName(): String = prefs.nickname.ifEmpty { context.getString(R.string.default_nickname) }
 
     /** 저장 상태 → 화면에 그릴 카드. 숨긴 앱 설정은 지난 카드에도 그때그때 적용한다. */
-    fun toLabel(card: StoredCard): LabelCard =
-        LabelBuilder.build(card.stats, productName(), card.phrases, prefs.hiddenPackages, card.hidden)
+    fun toLabel(card: StoredCard): LabelCard = LabelBuilder.build(
+        stats = card.stats,
+        productName = productName(),
+        phrases = phrases.localize(card.phrases),
+        hiddenPackages = prefs.hiddenPackages,
+        hiddenItems = card.hidden,
+        topAppFallback = phrases.topAppFallback(),
+    )
+
+    /** [category] 문구를 다시 뽑는다. 발행된 카드면 저장하고 사용 기록을 남긴다. */
+    suspend fun reroll(card: StoredCard, category: String): StoredCard {
+        val next = card.copy(phrases = phrases.reroll(card.stats, card.phrases, category, record = card.published))
+        if (card.published) setPhrases(card.weekStart, next.phrases)
+        return next
+    }
 
     /** 진행 중인 이번 주. 권한이 없으면 null. */
     suspend fun liveCurrentWeek(): StoredCard? {

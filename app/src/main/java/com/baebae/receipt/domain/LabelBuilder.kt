@@ -14,29 +14,37 @@ object LabelBuilder {
     /** 걸음 → 걷기 시간 환산. 분당 약 100보. */
     private const val MS_PER_STEP = 600L
 
+    const val TOP_APP_PLACEHOLDER = "{topApp}"
+
     fun build(
         stats: WeeklyStats,
         productName: String,
         phrases: ChosenPhrases,
         hiddenPackages: Set<String> = emptySet(),
         hiddenItems: Set<String> = emptySet(),
-    ): LabelCard = LabelCard(
-        productName = productName,
-        periodStart = stats.weekStart,
-        periodEnd = stats.weekEnd,
-        ingredients = ingredients(stats, hiddenPackages),
-        nutrition = NutritionFacts(
-            days = stats.days,
-            screenMs = stats.screenMs,
-            unlocks = stats.unlocks,
-            steps = stats.steps,
-            avgSleepMs = stats.avgSleepMs,
-        ),
-        cautions = phrases.cautions,
-        storage = phrases.storage,
-        expiry = phrases.expiry,
-        hidden = hiddenItems,
-    )
+        topAppFallback: String = "",
+    ): LabelCard {
+        // 문구 속 앱 이름은 그릴 때 채운다. 나중에 숨긴 앱이 지난 카드 문구에 남지 않게 하기 위해서다.
+        val topApp = stats.apps.firstOrNull { it.packageName !in hiddenPackages && it.foregroundMs > 0 }?.label ?: topAppFallback
+        fun Phrase.fill() = copy(text = text.replace(TOP_APP_PLACEHOLDER, topApp))
+        return LabelCard(
+            productName = productName,
+            periodStart = stats.weekStart,
+            periodEnd = stats.weekEnd,
+            ingredients = ingredients(stats, hiddenPackages),
+            nutrition = NutritionFacts(
+                days = stats.days,
+                screenMs = stats.screenMs,
+                unlocks = stats.unlocks,
+                steps = stats.steps,
+                avgSleepMs = stats.avgSleepMs,
+            ),
+            cautions = phrases.cautions.map { it.fill() },
+            storage = phrases.storage?.fill(),
+            expiry = phrases.expiry?.fill(),
+            hidden = hiddenItems,
+        )
+    }
 
     /**
      * 원재료명 및 함량. 분모는 측정된 활동 전체(화면 + 수면 + 걷기)이고,
