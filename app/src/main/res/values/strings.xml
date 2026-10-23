@@ -16,4 +16,54 @@
     <string name="settings_title">설정</string>
 
     <string name="placeholder_coming_soon">준비 중</string>
+
+    <!-- 카드: 표시사항 -->
+    <string name="card_product_name">%1$s (이번 주의 나)</string>
+    <string name="card_row_product">제품명</string>
+    <string name="card_row_food_type">식품유형</string>
+    <string name="card_food_type_value">기타 생활가공품</string>
+    <string name="card_row_content">내용량</string>
+    <string name="card_row_ingredients">원재료명 및 함량</string>
+    <string name="card_row_storage">보관방법</string>
+    <string name="card_row_caution">주의사항</string>
+    <string name="card_row_expiry">소비기한</string>
+    <string name="card_watermark">제조원 · 나 성분표</string>
+    <string name="ingredient_sleep">수면</string>
+    <string name="ingredient_walk">걷기</string>
+    <string name="list_separator">, </string>
+
+    <!-- 카드: 영양정보 -->
+    <string name="nutrition_title">영양정보</string>
+    <string name="nutrition_total_content">총 내용량 %1$s</string>
+    <string name="nutrition_per_total">총 내용량당</string>
+    <string name="nutrition_daily_value_header" formatted="false">1일 기준치에 대한 비율</string>
+    <string name="nutrition_screen_time">화면 시간</string>
+    <string name="nutrition_unlocks">잠금 해제</string>
+    <string name="nutrition_steps">걸음 수</string>
+    <string name="nutrition_sleep">평균 수면</string>
+    <string name="nutrition_not_measured">측정 불가</string>
+    <string name="nutrition_footnote" formatted="false">1일 기준치에 대한 비율(%)은 본 제품의 자체 기준(화면 3시간, 잠금 해제 60회, 걸음 10,000보, 수면 8시간)에 따른 것이므로 개인의 생활 방식에 따라 다를 수 있습니다.</string>
+
+    <!-- 서식 -->
+    <string name="fmt_hours_minutes">%1$d시간 %2$d분</string>
+    <string name="fmt_hours">%1$d시간</string>
+    <string name="fmt_minutes">%1$d분</string>
+    <string name="fmt_days">%1$d일</string>
+    <string name="fmt_times">%1$s회</string>
+    <string name="fmt_steps">%1$s보</string>
+    <string name="fmt_date_pattern">yyyy.MM.dd</string>
+
+    <!-- 카드 형식 / 템플릿 -->
+    <string name="card_format_story">스토리 9:16</string>
+    <string name="card_format_square">정사각 1:1</string>
+    <string name="template_classic">기본</string>
+    <string name="template_kraft">크라프트</string>
+    <string name="template_night">야간 생산분</string>
+
+    <!-- 더미 카드 문구 (문구 은행 연결 전 디자인 확인용) -->
+    <string name="sample_product_name">나</string>
+    <string name="sample_caution_1">새벽 2시 이후 개봉 시 변질 우려가 있으니 즉시 취침하십시오.</string>
+    <string name="sample_caution_2">본 제품은 유튜브, 인스타그램을 사용한 제품과 같은 손에서 처리하고 있습니다.</string>
+    <string name="sample_storage">직사광선(화면 밝기 최대)을 피해 서늘한 침구에 보관하십시오.</string>
+    <string name="sample_expiry">발행일로부터 7일 (다음 주 일요일 저녁 재입고)</string>
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 카드 표시사항 표의 항목명 칸 너비. 언어별 항목명 길이에 맞춘다. -->
+    <dimen name="card_label_column_story">62dp</dimen>
+    <dimen name="card_label_column_square">48dp</dimen>
+</resources>

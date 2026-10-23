@@ -16,4 +16,54 @@
     <string name="settings_title">Settings</string>
 
     <string name="placeholder_coming_soon">Coming soon</string>
+
+    <!-- Card: label -->
+    <string name="card_product_name">%1$s (This Week\'s Me)</string>
+    <string name="card_row_product">Product</string>
+    <string name="card_row_food_type">Type</string>
+    <string name="card_food_type_value">Processed lifestyle product</string>
+    <string name="card_row_content">Net qty</string>
+    <string name="card_row_ingredients">Ingredients</string>
+    <string name="card_row_storage">Storage</string>
+    <string name="card_row_caution">Warning</string>
+    <string name="card_row_expiry">Use by</string>
+    <string name="card_watermark">Manufactured by My Nutrition Facts</string>
+    <string name="ingredient_sleep">Sleep</string>
+    <string name="ingredient_walk">Walking</string>
+    <string name="list_separator">, </string>
+
+    <!-- Card: nutrition -->
+    <string name="nutrition_title">Nutrition Facts</string>
+    <string name="nutrition_total_content">Serving size %1$s</string>
+    <string name="nutrition_per_total">Amount per serving</string>
+    <string name="nutrition_daily_value_header" formatted="false">% Daily Value*</string>
+    <string name="nutrition_screen_time">Screen time</string>
+    <string name="nutrition_unlocks">Unlocks</string>
+    <string name="nutrition_steps">Steps</string>
+    <string name="nutrition_sleep">Avg. sleep</string>
+    <string name="nutrition_not_measured">N/A</string>
+    <string name="nutrition_footnote" formatted="false">* The % Daily Value is based on this product\'s own reference (3 h screen, 60 unlocks, 10,000 steps, 8 h sleep a day). Your lifestyle may vary.</string>
+
+    <!-- Formats -->
+    <string name="fmt_hours_minutes">%1$dh %2$dm</string>
+    <string name="fmt_hours">%1$dh</string>
+    <string name="fmt_minutes">%1$dm</string>
+    <string name="fmt_days">%1$d days</string>
+    <string name="fmt_times">%1$s times</string>
+    <string name="fmt_steps">%1$s steps</string>
+    <string name="fmt_date_pattern">MMM d, yyyy</string>
+
+    <!-- Card format / template -->
+    <string name="card_format_story">Story 9:16</string>
+    <string name="card_format_square">Square 1:1</string>
+    <string name="template_classic">Classic</string>
+    <string name="template_kraft">Kraft</string>
+    <string name="template_night">Night batch</string>
+
+    <!-- Sample card -->
+    <string name="sample_product_name">Me</string>
+    <string name="sample_caution_1">May spoil if opened after 2 a.m. Go to sleep immediately.</string>
+    <string name="sample_caution_2">Processed by the same hands that handle YouTube and Instagram.</string>
+    <string name="sample_storage">Store in a cool bed away from direct sunlight (max brightness).</string>
+    <string name="sample_expiry">7 days from issue (restocked next Sunday evening)</string>
 </resources>

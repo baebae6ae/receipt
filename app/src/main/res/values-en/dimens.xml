@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_label_column_story">74dp</dimen>
+    <dimen name="card_label_column_square">58dp</dimen>
+</resources>
