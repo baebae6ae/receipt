@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My Nutrition Facts</string>
+
+    <string name="tab_home">Home</string>
+    <string name="tab_archive">Archive</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="onboarding_title">My Nutrition Facts</string>
+    <string name="onboarding_body">Turns your phone usage into a weekly food-label card of \'this week\'s you\'. Nothing to type in.</string>
+    <string name="onboarding_start">Get started</string>
+
+    <string name="home_title">This week\'s label</string>
+    <string name="archive_title">Archive</string>
+    <string name="result_title">Label</string>
+    <string name="settings_title">Settings</string>
+
+    <string name="placeholder_coming_soon">Coming soon</string>
+</resources>

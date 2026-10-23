@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">나 성분표</string>
+
+    <string name="tab_home">홈</string>
+    <string name="tab_archive">보관함</string>
+    <string name="tab_settings">설정</string>
+
+    <string name="onboarding_title">나 성분표</string>
+    <string name="onboarding_body">폰 사용 기록을 모아 매주 \'이번 주의 나\'를 식품 성분표로 발행합니다. 입력할 것은 없습니다.</string>
+    <string name="onboarding_start">시작하기</string>
+
+    <string name="home_title">이번 주 성분표</string>
+    <string name="archive_title">보관함</string>
+    <string name="result_title">성분표</string>
+    <string name="settings_title">설정</string>
+
+    <string name="placeholder_coming_soon">준비 중</string>
+</resources>
