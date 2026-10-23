@@ -55,7 +55,7 @@ fun HomeScreen(onOpenResult: () -> Unit, onOpenPermissions: () -> Unit) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             while (true) {
                 hasPermission = container.stats.hasUsagePermission()
-                liveCard = if (hasPermission) container.labels.currentWeekCard() else null
+                liveCard = if (hasPermission) container.cards.liveCurrentWeek()?.let(container.cards::toLabel) else null
                 delay(REFRESH_INTERVAL_MS)
             }
         }

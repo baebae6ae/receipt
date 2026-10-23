@@ -19,18 +19,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.baebae.receipt.appContainer
+import com.baebae.receipt.ui.archive.ArchiveScreen
 import com.baebae.receipt.ui.onboarding.OnboardingScreen
 import com.baebae.receipt.ui.permissions.PermissionsScreen
-import com.baebae.receipt.ui.screens.ArchiveScreen
+import com.baebae.receipt.ui.result.LIVE_WEEK
+import com.baebae.receipt.ui.result.ResultScreen
 import com.baebae.receipt.ui.screens.HomeScreen
-import com.baebae.receipt.ui.screens.ResultScreen
-import com.baebae.receipt.ui.screens.SettingsScreen
+import com.baebae.receipt.ui.settings.HiddenAppsScreen
+import com.baebae.receipt.ui.settings.LicensesScreen
+import com.baebae.receipt.ui.settings.PrivacyScreen
+import com.baebae.receipt.ui.settings.SettingsScreen
 
 @Composable
 fun ReceiptApp() {
@@ -44,6 +48,7 @@ fun ReceiptApp() {
     val showTabs = bottomTabs.any { tab ->
         currentDestination?.hierarchy?.any { it.route == tab.destination.route } == true
     }
+    val openPermissions = { navController.navigate(Destination.Permissions.route(fromOnboarding = false)) }
 
     Scaffold(
         bottomBar = {
@@ -93,17 +98,30 @@ fun ReceiptApp() {
             }
             composable(Destination.Home.route) {
                 HomeScreen(
-                    onOpenResult = { navController.navigate(Destination.Result.route) },
-                    onOpenPermissions = { navController.navigate(Destination.Permissions.route(fromOnboarding = false)) },
+                    onOpenResult = { navController.navigate(Destination.Result.route(LIVE_WEEK)) },
+                    onOpenPermissions = openPermissions,
                 )
             }
-            composable(Destination.Result.route) {
-                ResultScreen()
+            composable(
+                route = Destination.Result.route,
+                arguments = listOf(navArgument(Destination.Result.ARG_WEEK) { type = NavType.LongType }),
+            ) { entry ->
+                ResultScreen(weekEpochDay = entry.arguments?.getLong(Destination.Result.ARG_WEEK) ?: LIVE_WEEK)
             }
-            composable(Destination.Archive.route) { ArchiveScreen() }
+            composable(Destination.Archive.route) {
+                ArchiveScreen(onOpen = { navController.navigate(Destination.Result.route(it.weekStart.toEpochDay())) })
+            }
             composable(Destination.Settings.route) {
-                SettingsScreen(onOpenPermissions = { navController.navigate(Destination.Permissions.route(fromOnboarding = false)) })
+                SettingsScreen(
+                    onOpenPermissions = openPermissions,
+                    onOpenHiddenApps = { navController.navigate(Destination.HiddenApps.route) },
+                    onOpenPrivacy = { navController.navigate(Destination.Privacy.route) },
+                    onOpenLicenses = { navController.navigate(Destination.Licenses.route) },
+                )
             }
+            composable(Destination.HiddenApps.route) { HiddenAppsScreen() }
+            composable(Destination.Privacy.route) { PrivacyScreen() }
+            composable(Destination.Licenses.route) { LicensesScreen() }
         }
     }
 }

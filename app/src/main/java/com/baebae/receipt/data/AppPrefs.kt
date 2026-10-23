@@ -18,9 +18,15 @@ class AppPrefs(context: Context) {
         get() = prefs.getString(KEY_NICKNAME, "").orEmpty()
         set(value) = prefs.edit().putString(KEY_NICKNAME, value.trim().take(MAX_NICKNAME)).apply()
 
+    /** 카드 원재료에 이름을 올리지 않을 앱. 화면 시간 합계에는 그대로 포함된다. */
+    var hiddenPackages: Set<String>
+        get() = prefs.getStringSet(KEY_HIDDEN_PACKAGES, emptySet()).orEmpty().toSet()
+        set(value) = prefs.edit().putStringSet(KEY_HIDDEN_PACKAGES, value).apply()
+
     companion object {
         const val MAX_NICKNAME = 12
         private const val KEY_ONBOARDING_DONE = "onboarding_done"
         private const val KEY_NICKNAME = "nickname"
+        private const val KEY_HIDDEN_PACKAGES = "hidden_packages"
     }
 }

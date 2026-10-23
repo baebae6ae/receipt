@@ -6,12 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [StepSnapshotEntity::class],
+    entities = [StepSnapshotEntity::class, DailyStatsEntity::class, WeeklyCardEntity::class],
     version = 1,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun stepSnapshots(): StepSnapshotDao
+    abstract fun dailyStats(): DailyStatsDao
+    abstract fun weeklyCards(): WeeklyCardDao
 
     companion object {
         fun create(context: Context): AppDatabase =

@@ -2,7 +2,8 @@ package com.baebae.receipt
 
 import android.content.Context
 import com.baebae.receipt.data.AppPrefs
-import com.baebae.receipt.data.LabelService
+import com.baebae.receipt.data.CardRepository
+import com.baebae.receipt.data.SamplePhrasePicker
 import com.baebae.receipt.data.StatsRepository
 import com.baebae.receipt.data.db.AppDatabase
 import com.baebae.receipt.data.steps.StepRepository
@@ -17,6 +18,7 @@ class AppContainer(context: Context) {
     val database = AppDatabase.create(appContext)
     val installedApps = InstalledApps(appContext)
     val steps = StepRepository(appContext, database.stepSnapshots())
-    val stats = StatsRepository(appContext, UsageCollector(appContext), installedApps, steps)
-    val labels = LabelService(appContext, prefs, stats, steps)
+    val stats = StatsRepository(appContext, UsageCollector(appContext), installedApps, steps, database.dailyStats())
+    val phrases = SamplePhrasePicker(appContext)
+    val cards = CardRepository(appContext, prefs, stats, steps, database.weeklyCards(), phrases)
 }
