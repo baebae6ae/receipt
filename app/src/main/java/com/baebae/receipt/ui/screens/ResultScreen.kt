@@ -14,12 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.baebae.receipt.appContainer
+import com.baebae.receipt.domain.LabelCard
 import com.baebae.receipt.ui.card.CardExportBar
 import com.baebae.receipt.ui.card.CardFormat
 import com.baebae.receipt.ui.card.CardTemplate
@@ -33,7 +36,10 @@ import com.baebae.receipt.ui.card.rememberSampleCard
 // 결과 카드 화면에는 광고를 넣지 않는다(배너 포함).
 @Composable
 fun ResultScreen() {
-    val card = rememberSampleCard()
+    val container = appContainer()
+    val sample = rememberSampleCard()
+    val liveCard by produceState<LabelCard?>(initialValue = null) { value = container.labels.currentWeekCard() }
+    val card = liveCard ?: sample
     var format by rememberSaveable { mutableStateOf(CardFormat.STORY) }
     var template by rememberSaveable { mutableStateOf(CardTemplate.CLASSIC) }
     val layer = rememberCardLayer()

@@ -18,12 +18,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.baebae.receipt.appContainer
 import com.baebae.receipt.ui.onboarding.OnboardingScreen
+import com.baebae.receipt.ui.permissions.PermissionsScreen
 import com.baebae.receipt.ui.screens.ArchiveScreen
 import com.baebae.receipt.ui.screens.HomeScreen
 import com.baebae.receipt.ui.screens.ResultScreen
@@ -55,22 +58,52 @@ fun ReceiptApp() {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(Destination.Onboarding.route) {
-                val finish = {
+                fun finish(next: String) {
                     prefs.onboardingDone = true
-                    navController.navigate(Destination.Home.route) {
+                    navController.navigate(next) {
                         popUpTo(Destination.Onboarding.route) { inclusive = true }
                     }
                 }
-                OnboardingScreen(onConnectRealData = finish, onSkip = finish)
+                OnboardingScreen(
+                    onConnectRealData = { finish(Destination.Permissions.route(fromOnboarding = true)) },
+                    onSkip = { finish(Destination.Home.route) },
+                )
+            }
+            composable(
+                route = Destination.Permissions.route,
+                arguments = listOf(
+                    navArgument(Destination.Permissions.ARG_ONBOARDING) {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    },
+                ),
+            ) { entry ->
+                val fromOnboarding = entry.arguments?.getBoolean(Destination.Permissions.ARG_ONBOARDING) ?: false
+                PermissionsScreen(
+                    onDone = {
+                        if (fromOnboarding) {
+                            navController.navigate(Destination.Home.route) {
+                                popUpTo(Destination.Permissions.route) { inclusive = true }
+                            }
+                        } else {
+                            navController.popBackStack()
+                        }
+                    },
+                )
             }
             composable(Destination.Home.route) {
-                HomeScreen(onOpenResult = { navController.navigate(Destination.Result.route) })
+                HomeScreen(
+                    onOpenResult = { navController.navigate(Destination.Result.route) },
+                    onOpenPermissions = { navController.navigate(Destination.Permissions.route(fromOnboarding = false)) },
+                )
             }
             composable(Destination.Result.route) {
                 ResultScreen()
             }
             composable(Destination.Archive.route) { ArchiveScreen() }
-            composable(Destination.Settings.route) { SettingsScreen() }
+            composable(Destination.Settings.route) {
+                SettingsScreen(onOpenPermissions = { navController.navigate(Destination.Permissions.route(fromOnboarding = false)) })
+            }
         }
     }
 }

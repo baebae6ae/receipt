@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 앱별 사용 시간·잠금 해제·화면 꺼짐 구간. 설정 > 사용 기록 접근에서 사용자가 직접 켠다. 기기 밖으로 보내지 않는다. -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- Android 9 에서만 갤러리 저장에 필요. 10 이상은 MediaStore 에 권한 없이 저장한다. -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
+
+    <!-- QUERY_ALL_PACKAGES 대신: 런처 앱(이름 조회)과 홈 런처(화면 시간에서 제외)만 보이게 한다. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+    </queries>
 
     <application
         android:name=".ReceiptApplication"

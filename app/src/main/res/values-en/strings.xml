@@ -125,4 +125,27 @@
     <string name="quiz_result_real_data_hint">With your real usage, the label shows actual app names, steps and sleep.</string>
     <string name="quiz_result_real_data">Make one from my real data</string>
     <string name="quiz_result_later">Maybe later</string>
+
+    <!-- Permissions -->
+    <string name="permissions_title">Permissions</string>
+    <string name="permissions_intro">Everything collected with these permissions is processed on this phone only and is never sent anywhere. You can turn them off in system settings at any time.</string>
+    <string name="permissions_done">Done</string>
+    <string name="permission_state_on">Allowed</string>
+    <string name="permission_state_off">Off</string>
+    <string name="permission_open_settings">Turn on in Settings</string>
+    <string name="permission_usage_title">Usage access (required)</string>
+    <string name="permission_usage_desc">Used to calculate per-app screen time, unlocks and screen-off time (sleep estimate). Find this app in the list and turn it on.</string>
+
+    <!-- Home -->
+    <string name="home_next_publish">Next issue %1$s</string>
+    <string name="fmt_publish_datetime">EEE, MMM d, h:mm a</string>
+    <string name="home_no_permission">Turn on usage access to fill the label with this week\'s real data. The card below is a sample.</string>
+    <string name="home_open_permissions">Turn on permissions</string>
+    <string name="home_live_caption">This week\'s label in progress. Refreshes every minute while open and is finalized Sunday evening.</string>
+    <string name="home_sample_caption">Sample card</string>
+    <string name="home_open_card">Preview · Share</string>
+
+    <!-- Settings -->
+    <string name="settings_permissions">Permissions</string>
+    <string name="settings_permissions_desc">Usage access, physical activity, notifications</string>
 </resources>

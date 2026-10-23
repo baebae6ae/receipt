@@ -9,6 +9,10 @@ sealed class Destination(val route: String) {
     data object Result : Destination("result")
     data object Archive : Destination("archive")
     data object Settings : Destination("settings")
+    data object Permissions : Destination("permissions?onboarding={onboarding}") {
+        const val ARG_ONBOARDING = "onboarding"
+        fun route(fromOnboarding: Boolean) = "permissions?onboarding=$fromOnboarding"
+    }
 }
 
 class TabItem(val destination: Destination, @StringRes val label: Int)
