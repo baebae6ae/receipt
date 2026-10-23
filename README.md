@@ -25,7 +25,7 @@ app/src/main/
 
 ## 웹 체험판 (GitHub Pages)
 
-`docs/` 폴더가 그대로 GitHub Pages 사이트다. 안드로이드 기기 없이 아이폰·PC 브라우저로 화면 흐름과 카드 디자인, 문구를 확인하는 용도.
+**https://baebae6ae.github.io/receipt/** — `docs/` 폴더를 `gh-pages` 브랜치로 올린 사이트다(`tools/publish_web_demo.sh`). 안드로이드 기기 없이 아이폰·PC 브라우저로 화면 흐름과 카드 디자인, 문구를 확인하는 용도.
 
 - `docs/index.html` + `docs/demo/`: 온보딩·질문형 체험·홈·결과·보관함·설정을 예시 데이터로 재현. 카드는 1080px PNG 로 저장 가능
 - 실험실(`#/lab`): 원자료 슬라이더로 어떤 조건의 문구가 고르는지 확인, 문구 은행 전체 보기
