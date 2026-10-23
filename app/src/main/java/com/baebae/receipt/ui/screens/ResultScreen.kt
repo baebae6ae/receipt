@@ -20,10 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.baebae.receipt.ui.card.CardExportBar
 import com.baebae.receipt.ui.card.CardFormat
 import com.baebae.receipt.ui.card.CardTemplate
 import com.baebae.receipt.ui.card.LabelCardView
 import com.baebae.receipt.ui.card.ScaledCard
+import com.baebae.receipt.ui.card.exportFileName
+import com.baebae.receipt.ui.card.recordInto
+import com.baebae.receipt.ui.card.rememberCardLayer
 import com.baebae.receipt.ui.card.rememberSampleCard
 
 // 결과 카드 화면에는 광고를 넣지 않는다(배너 포함).
@@ -32,6 +36,7 @@ fun ResultScreen() {
     val card = rememberSampleCard()
     var format by rememberSaveable { mutableStateOf(CardFormat.STORY) }
     var template by rememberSaveable { mutableStateOf(CardTemplate.CLASSIC) }
+    val layer = rememberCardLayer()
 
     Column(
         modifier = Modifier
@@ -41,9 +46,14 @@ fun ResultScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        ScaledCard(format = format, modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp)) {
+        ScaledCard(
+            format = format,
+            modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp),
+            contentModifier = Modifier.recordInto(layer),
+        ) {
             LabelCardView(card, template, format, showWatermark = true)
         }
+        CardExportBar(layer = layer, fileName = exportFileName(card, format))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CardFormat.entries.forEach { option ->
                 FilterChip(

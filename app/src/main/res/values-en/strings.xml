@@ -66,4 +66,11 @@
     <string name="sample_caution_2">Processed by the same hands that handle YouTube and Instagram.</string>
     <string name="sample_storage">Store in a cool bed away from direct sunlight (max brightness).</string>
     <string name="sample_expiry">7 days from issue (restocked next Sunday evening)</string>
+
+    <!-- Save / share -->
+    <string name="action_save">Save</string>
+    <string name="action_share">Share</string>
+    <string name="share_chooser_title">Share label</string>
+    <string name="export_saved">Saved to gallery.</string>
+    <string name="export_failed">Couldn\'t create the image.</string>
 </resources>

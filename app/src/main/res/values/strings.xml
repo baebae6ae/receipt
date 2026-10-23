@@ -66,4 +66,12 @@
     <string name="sample_caution_2">본 제품은 유튜브, 인스타그램을 사용한 제품과 같은 손에서 처리하고 있습니다.</string>
     <string name="sample_storage">직사광선(화면 밝기 최대)을 피해 서늘한 침구에 보관하십시오.</string>
     <string name="sample_expiry">발행일로부터 7일 (다음 주 일요일 저녁 재입고)</string>
+
+    <!-- 저장 / 공유 -->
+    <string name="gallery_folder" translatable="false">NaLabel</string>
+    <string name="action_save">저장</string>
+    <string name="action_share">공유</string>
+    <string name="share_chooser_title">성분표 공유</string>
+    <string name="export_saved">갤러리에 저장했습니다.</string>
+    <string name="export_failed">이미지를 만들지 못했습니다.</string>
 </resources>
