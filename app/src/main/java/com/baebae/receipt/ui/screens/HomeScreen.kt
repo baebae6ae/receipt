@@ -1,6 +1,11 @@
 package com.baebae.receipt.ui.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,12 +65,16 @@ fun HomeScreen(onOpenResult: () -> Unit, onOpenPublished: (week: Long) -> Unit, 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            // 발행 작업이 밀렸으면 앱을 연 김에 발행한다(알림 없이, 아래 배너로 알린다).
-            if (container.stats.hasUsagePermission()) PublishWorker.publishDue(context, notify = false)
-            unrevealed = container.cards.latestUnrevealed()
+            var first = true
             while (true) {
                 hasPermission = container.stats.hasUsagePermission()
                 liveCard = if (hasPermission) container.cards.liveCurrentWeek()?.let(container.cards::toLabel) else null
+                if (first) {
+                    // 발행 작업이 밀렸으면 앱을 연 김에 발행한다(알림 없이, 위 배너로 알린다).
+                    if (hasPermission) PublishWorker.publishDue(context, notify = false)
+                    unrevealed = container.cards.latestUnrevealed()
+                    first = false
+                }
                 delay(REFRESH_INTERVAL_MS)
             }
         }
@@ -117,17 +126,25 @@ fun HomeScreen(onOpenResult: () -> Unit, onOpenPublished: (week: Long) -> Unit, 
                 }
             }
 
-            val card = liveCard ?: sample
-            ScaledCard(
-                format = CardFormat.SQUARE,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(enabled = liveCard != null, onClick = onOpenResult),
-            ) {
-                LabelCardView(card, CardTemplate.CLASSIC, CardFormat.SQUARE, showWatermark = true)
+            // 권한이 있으면 실제 카드가 계산될 때까지 예시 카드 대신 빈 자리를 보여 준다.
+            val card = liveCard ?: sample.takeIf { !hasPermission }
+            if (card == null) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f).border(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    contentAlignment = Alignment.Center,
+                ) { CircularProgressIndicator() }
+            } else {
+                ScaledCard(
+                    format = CardFormat.SQUARE,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = liveCard != null, onClick = onOpenResult),
+                ) {
+                    LabelCardView(card, CardTemplate.CLASSIC, CardFormat.SQUARE, showWatermark = true)
+                }
             }
             Text(
-                text = stringResource(if (liveCard != null) R.string.home_live_caption else R.string.home_sample_caption),
+                text = stringResource(if (hasPermission) R.string.home_live_caption else R.string.home_sample_caption),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

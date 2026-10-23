@@ -9,15 +9,15 @@ class StepRepository(
     private val dao: StepSnapshotDao,
 ) {
 
-    /** 마지막 스냅샷이 [minIntervalMs]보다 오래됐으면 새로 남긴다. */
+    /** 앱을 열었을 때: 마지막 스냅샷이 [minIntervalMs]보다 오래됐으면 짧게 기다려 새로 남긴다. */
     suspend fun snapshotIfStale(minIntervalMs: Long = 5 * MINUTE) {
         val latest = dao.latest()
         if (latest != null && System.currentTimeMillis() - latest.timeMillis < minIntervalMs) return
-        snapshot()
+        snapshot(StepSensor.FOREGROUND_TIMEOUT_MS)
     }
 
-    suspend fun snapshot(): Boolean {
-        val sample = StepSensor.read(context) ?: return false
+    suspend fun snapshot(timeoutMs: Long = StepSensor.BACKGROUND_TIMEOUT_MS): Boolean {
+        val sample = StepSensor.read(context, timeoutMs) ?: return false
         dao.insert(StepSnapshotEntity(timeMillis = sample.timeMillis, counter = sample.counter, bootMillis = sample.bootMillis))
         dao.deleteOlderThan(sample.timeMillis - RETENTION_MS)
         return true

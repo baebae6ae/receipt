@@ -16,7 +16,11 @@ import kotlin.coroutines.resume
 /** TYPE_STEP_COUNTER 를 한 번 읽는다. 값은 마지막 부팅 이후 누적 걸음 수. */
 object StepSensor {
 
-    private const val READ_TIMEOUT_MS = 10_000L
+    /** 백그라운드 작업에서는 넉넉히 기다린다. */
+    const val BACKGROUND_TIMEOUT_MS = 10_000L
+
+    /** 화면을 막지 않도록 앱을 열었을 때는 짧게만 기다린다. */
+    const val FOREGROUND_TIMEOUT_MS = 1_500L
 
     fun isAvailable(context: Context): Boolean =
         context.getSystemService(SensorManager::class.java)?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null
@@ -29,11 +33,11 @@ object StepSensor {
      * 센서가 없거나 권한이 없거나 제한 시간 안에 값이 오지 않으면 null.
      * 백그라운드에서는 기기에 따라 이벤트가 오지 않을 수 있어 앱을 열 때도 스냅샷을 남긴다.
      */
-    suspend fun read(context: Context): StepSample? {
+    suspend fun read(context: Context, timeoutMs: Long = BACKGROUND_TIMEOUT_MS): StepSample? {
         if (!hasPermission(context)) return null
         val manager = context.getSystemService(SensorManager::class.java) ?: return null
         val sensor = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) ?: return null
-        val counter = withTimeoutOrNull(READ_TIMEOUT_MS) {
+        val counter = withTimeoutOrNull(timeoutMs) {
             suspendCancellableCoroutine<Long> { cont ->
                 val listener = object : SensorEventListener {
                     override fun onSensorChanged(event: SensorEvent) {

@@ -120,9 +120,11 @@ class StatsRepository(
             val apps = totals.entries
                 .map { (pkg, ms) -> AppUsage(pkg, labels[pkg] ?: savedLabels[pkg] ?: pkg, ms) }
                 .sortedByDescending { it.foregroundMs }
+            // 시스템 보존 기간을 넘겨 기록이 아예 없는 날은 일수에서 뺀다(평균이 묽어지지 않게).
+            val measuredDays = days.count { it.apps.isNotEmpty() || it.unlocks > 0 || it.sleepMs != null }
             return WeeklyStats(
                 weekStart = weekStart,
-                days = days.size,
+                days = measuredDays,
                 apps = apps,
                 screenMs = apps.sumOf { it.foregroundMs },
                 unlocks = days.sumOf { it.unlocks },

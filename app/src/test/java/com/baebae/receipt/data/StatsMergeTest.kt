@@ -26,6 +26,15 @@ class StatsMergeTest {
     }
 
     @Test
+    fun emptyDaysAreNotCounted() {
+        val days = listOf(
+            DayRecord(monday, emptyList(), 0, 0, null),
+            DayRecord(monday.plusDays(1), listOf(AppUsage("com.a", "A", 10)), 1, 0, null),
+        )
+        assertEquals(1, StatsRepository.merge(monday, days, emptyMap(), 0).days)
+    }
+
+    @Test
     fun noSleepNightsMeansNullAverage() {
         val stats = StatsRepository.merge(monday, listOf(DayRecord(monday, emptyList(), 0, 0, null)), emptyMap(), 0)
         assertNull(stats.avgSleepMs)
