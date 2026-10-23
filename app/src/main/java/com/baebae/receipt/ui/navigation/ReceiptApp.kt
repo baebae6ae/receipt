@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,7 +38,7 @@ import com.baebae.receipt.ui.settings.PrivacyScreen
 import com.baebae.receipt.ui.settings.SettingsScreen
 
 @Composable
-fun ReceiptApp() {
+fun ReceiptApp(pendingWeek: Long? = null, onPendingWeekHandled: () -> Unit = {}) {
     val prefs = appContainer().prefs
     val navController = rememberNavController()
     val startDestination = remember {
@@ -49,6 +50,13 @@ fun ReceiptApp() {
         currentDestination?.hierarchy?.any { it.route == tab.destination.route } == true
     }
     val openPermissions = { navController.navigate(Destination.Permissions.route(fromOnboarding = false)) }
+    val openPublished: (Long) -> Unit = { week -> navController.navigate(Destination.Result.route(week)) }
+
+    // 알림에서 들어온 경우 해당 주 카드로 바로 간다.
+    LaunchedEffect(pendingWeek) {
+        if (pendingWeek != null && prefs.onboardingDone) openPublished(pendingWeek)
+        if (pendingWeek != null) onPendingWeekHandled()
+    }
 
     Scaffold(
         bottomBar = {
@@ -99,6 +107,7 @@ fun ReceiptApp() {
             composable(Destination.Home.route) {
                 HomeScreen(
                     onOpenResult = { navController.navigate(Destination.Result.route(LIVE_WEEK)) },
+                    onOpenPublished = openPublished,
                     onOpenPermissions = openPermissions,
                 )
             }

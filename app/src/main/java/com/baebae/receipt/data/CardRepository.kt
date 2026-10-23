@@ -66,6 +66,9 @@ class CardRepository(
 
     suspend fun get(weekStart: LocalDate): StoredCard? = dao.get(weekStart.toEpochDay())?.toStored()
 
+    /** 발행됐지만 아직 열어 보지 않은 가장 최근 카드. */
+    suspend fun latestUnrevealed(): StoredCard? = dao.latestUnrevealed()?.toStored()
+
     fun observeArchive(): Flow<List<StoredCard>> = dao.observeAll().map { list -> list.map { it.toStored() } }
 
     /**

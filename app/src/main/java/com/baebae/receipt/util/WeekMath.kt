@@ -31,6 +31,16 @@ object WeekMath {
         return if (thisWeek.isAfter(now)) thisWeek else thisWeek.plusWeeks(1)
     }
 
+    /** 그 주의 발행 시각(일요일 20:00). */
+    fun publishAt(weekStart: LocalDate, zone: ZoneId): ZonedDateTime =
+        weekStart.plusDays(6).atTime(PUBLISH_TIME).atZone(zone)
+
+    /** [now] 이전의 가장 최근 발행 시각이 속한 주. 발행 작업이 늦게 돌아도 엉뚱한 주를 발행하지 않게 한다. */
+    fun lastDueWeek(now: ZonedDateTime = ZonedDateTime.now()): LocalDate {
+        val thisWeek = weekStartOf(now.toLocalDate())
+        return if (!now.isBefore(publishAt(thisWeek, now.zone))) thisWeek else thisWeek.minusWeeks(1)
+    }
+
     fun toLocalDateTime(millis: Long, zone: ZoneId = ZoneId.systemDefault()): LocalDateTime =
         LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(millis), zone)
 }

@@ -32,6 +32,9 @@ interface WeeklyCardDao {
     @Query("SELECT * FROM weekly_card WHERE weekStartEpochDay = :week")
     suspend fun get(week: Long): WeeklyCardEntity?
 
+    @Query("SELECT * FROM weekly_card WHERE revealed = 0 ORDER BY weekStartEpochDay DESC LIMIT 1")
+    suspend fun latestUnrevealed(): WeeklyCardEntity?
+
     @Upsert
     suspend fun upsert(entity: WeeklyCardEntity)
 

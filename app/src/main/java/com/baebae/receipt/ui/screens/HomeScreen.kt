@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -27,15 +28,18 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.baebae.receipt.R
 import com.baebae.receipt.appContainer
+import com.baebae.receipt.data.StoredCard
 import com.baebae.receipt.domain.LabelCard
 import com.baebae.receipt.ui.card.CardFormat
 import com.baebae.receipt.ui.card.CardTemplate
+import com.baebae.receipt.ui.card.CardText
 import com.baebae.receipt.ui.card.LabelCardView
 import com.baebae.receipt.ui.card.ScaledCard
 import com.baebae.receipt.ui.card.rememberSampleCard
 import com.baebae.receipt.ui.components.RuledBox
 import com.baebae.receipt.ui.components.SquareOutlinedButton
 import com.baebae.receipt.util.WeekMath
+import com.baebae.receipt.work.PublishWorker
 import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -43,16 +47,21 @@ import java.util.Locale
 private const val REFRESH_INTERVAL_MS = 60_000L
 
 @Composable
-fun HomeScreen(onOpenResult: () -> Unit, onOpenPermissions: () -> Unit) {
+fun HomeScreen(onOpenResult: () -> Unit, onOpenPublished: (week: Long) -> Unit, onOpenPermissions: () -> Unit) {
     val container = appContainer()
+    val context = LocalContext.current
     var hasPermission by remember { mutableStateOf(container.stats.hasUsagePermission()) }
     var liveCard by remember { mutableStateOf<LabelCard?>(null) }
+    var unrevealed by remember { mutableStateOf<StoredCard?>(null) }
     val sample = rememberSampleCard()
 
     // 화면이 보이는 동안 1분마다 이번 주 카드를 다시 계산한다.
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            // 발행 작업이 밀렸으면 앱을 연 김에 발행한다(알림 없이, 아래 배너로 알린다).
+            if (container.stats.hasUsagePermission()) PublishWorker.publishDue(context, notify = false)
+            unrevealed = container.cards.latestUnrevealed()
             while (true) {
                 hasPermission = container.stats.hasUsagePermission()
                 liveCard = if (hasPermission) container.cards.liveCurrentWeek()?.let(container.cards::toLabel) else null
@@ -78,6 +87,22 @@ fun HomeScreen(onOpenResult: () -> Unit, onOpenPermissions: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
+
+        unrevealed?.let { card ->
+            RuledBox {
+                Text(text = stringResource(R.string.home_new_label_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "${CardText.lot(card.weekStart)}  ${CardText.dateRange(card.weekStart, card.stats.weekEnd)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Button(
+                    onClick = { onOpenPublished(card.weekStart.toEpochDay()) },
+                    shape = RoundedCornerShape(0.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.home_new_label_open)) }
+            }
+        }
 
         if (!hasPermission) {
             RuledBox {

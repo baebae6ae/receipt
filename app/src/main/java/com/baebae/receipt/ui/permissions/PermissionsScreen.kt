@@ -3,6 +3,7 @@ package com.baebae.receipt.ui.permissions
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.baebae.receipt.R
 import com.baebae.receipt.data.steps.StepSensor
 import com.baebae.receipt.data.usage.UsagePermission
+import com.baebae.receipt.notify.WeeklyNotifier
 import com.baebae.receipt.ui.components.RuledBox
 import com.baebae.receipt.ui.components.SquareOutlinedButton
 
@@ -49,10 +51,18 @@ fun PermissionsScreen(onDone: () -> Unit) {
         activityDenied = !granted
     }
 
+    var notifyGranted by remember { mutableStateOf(WeeklyNotifier.canNotify(context)) }
+    var notifyDenied by remember { mutableStateOf(false) }
+    val notifyLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        notifyGranted = WeeklyNotifier.canNotify(context)
+        notifyDenied = !granted
+    }
+
     // 설정 화면에서 돌아올 때마다 다시 확인한다.
     LifecycleResumeEffect(Unit) {
         usageGranted = UsagePermission.isGranted(context)
         activityGranted = StepSensor.hasPermission(context)
+        notifyGranted = WeeklyNotifier.canNotify(context)
         onPauseOrDispose { }
     }
 
@@ -99,6 +109,22 @@ fun PermissionsScreen(onDone: () -> Unit) {
             }
         }
 
+        PermissionItem(
+            title = stringResource(R.string.permission_notification_title),
+            description = stringResource(R.string.permission_notification_desc),
+            granted = notifyGranted,
+            actionLabel = stringResource(if (notifyDenied) R.string.permission_open_settings else R.string.permission_allow),
+            onRequest = {
+                if (!notifyDenied && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    notifyLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    openNotificationSettings(context)
+                }
+            },
+        )
+
         Button(onClick = onDone, shape = RoundedCornerShape(0.dp), modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.permissions_done))
         }
@@ -108,6 +134,12 @@ fun PermissionsScreen(onDone: () -> Unit) {
 internal fun openAppDetails(context: Context) {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
     runCatching { context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+}
+
+internal fun openNotificationSettings(context: Context) {
+    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+    runCatching { context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+        .onFailure { openAppDetails(context) }
 }
 
 @Composable

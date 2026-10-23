@@ -9,13 +9,18 @@ import androidx.work.WorkerParameters
 import com.baebae.receipt.appContainer
 import java.util.concurrent.TimeUnit
 
-/** 1시간마다 걸음 센서 스냅샷을 남기고 최근 이틀의 사용 요약을 캐시한다. 네트워크를 쓰지 않는다. */
+/**
+ * 1시간마다 걸음 센서 스냅샷을 남기고 최근 이틀의 사용 요약을 캐시한다. 네트워크를 쓰지 않는다.
+ * 발행 작업이 밀렸으면 여기서 대신 발행하고, 다음 발행 예약도 챙긴다.
+ */
 class CollectWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
         val container = applicationContext.appContainer
         container.steps.snapshot()
         container.stats.refreshRecentDays()
+        PublishWorker.publishDue(applicationContext, notify = true)
+        PublishWorker.schedule(applicationContext)
         return Result.success()
     }
 
