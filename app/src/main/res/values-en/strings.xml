@@ -43,6 +43,7 @@
     <string name="fmt_hours_minutes">%1$dh %2$dm</string>
     <string name="fmt_hours">%1$dh</string>
     <string name="fmt_minutes">%1$dm</string>
+    <string name="fmt_under_minute">&lt;1m</string>
     <string name="fmt_days">%1$d days</string>
     <string name="fmt_times">%1$s times</string>
     <string name="fmt_steps">%1$s steps</string>

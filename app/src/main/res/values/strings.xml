@@ -43,6 +43,7 @@
     <string name="fmt_hours_minutes">%1$d시간 %2$d분</string>
     <string name="fmt_hours">%1$d시간</string>
     <string name="fmt_minutes">%1$d분</string>
+    <string name="fmt_under_minute">1분 미만</string>
     <string name="fmt_days">%1$d일</string>
     <string name="fmt_times">%1$s회</string>
     <string name="fmt_steps">%1$s보</string>

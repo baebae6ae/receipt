@@ -22,6 +22,7 @@ internal object CardText {
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
         return when {
+            totalMinutes == 0 && ms > 0 -> stringResource(R.string.fmt_under_minute)
             hours == 0 -> stringResource(R.string.fmt_minutes, minutes)
             minutes == 0 -> stringResource(R.string.fmt_hours, hours)
             else -> stringResource(R.string.fmt_hours_minutes, hours, minutes)

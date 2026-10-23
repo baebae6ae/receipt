@@ -28,8 +28,14 @@ class InstalledApps(private val context: Context) {
 
     fun labelMap(): Map<String, String> = launcherApps().associate { it.packageName to it.label }
 
+    /**
+     * 기본 홈 런처만 뺀다. HOME 카테고리를 가진 앱을 모두 빼면 안 된다:
+     * 설정 앱도 부팅용 FallbackHome 액티비티에 HOME 을 선언하고 있어서 함께 빠져 버린다.
+     */
     private fun homePackages(pm: PackageManager): Set<String> {
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-        return pm.queryIntentActivities(intent, 0).map { it.activityInfo.packageName }.toSet()
+        val pkg = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName
+        // 기본 런처가 정해지지 않았으면 선택 화면(android)이 돌아온다.
+        return if (pkg == null || pkg == "android") emptySet() else setOf(pkg)
     }
 }

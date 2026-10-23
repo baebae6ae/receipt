@@ -70,6 +70,33 @@ def tap(text, timeout=30, exact=True, scroll=False):
     raise SystemExit(f"FAIL: '{text}' not found within {timeout}s")
 
 
+def wait_regex(pattern, timeout=30):
+    end = time.time() + timeout
+    while time.time() < end:
+        for t, _, _ in nodes():
+            if re.search(pattern, t):
+                note(f"found /{pattern}/ in '{t}'")
+                return t
+        time.sleep(1)
+    shot("zz_fail")
+    raise SystemExit(f"FAIL: /{pattern}/ not found within {timeout}s")
+
+
+def close_fullscreen_ad():
+    """AdMob 전면/보상형 광고는 BACK 으로 닫히지 않아 X 버튼을 누른다."""
+    for _ in range(20):
+        for t, x, y in nodes():
+            if re.search(r"(?i)close|닫기", t):
+                adb("shell", "input", "tap", str(x), str(y))
+                note(f"tap ad close '{t}'")
+                time.sleep(2)
+                return
+        time.sleep(1)
+    adb("shell", "input", "tap", "1020", "190")  # 우상단 X 위치
+    note("tap ad close (fallback)")
+    time.sleep(2)
+
+
 def swipe_up():
     adb("shell", "input", "swipe", "540", "1700", "540", "700", "400")
     time.sleep(0.8)
@@ -113,6 +140,8 @@ def main():
         wait("이번 주 성분표")
         time.sleep(8)
         shot("home_live_real_data")
+        # 실제 사용 기록 반영 확인: 테스트 전에 연 '설정' 앱이 원재료에 있어야 한다.
+        wait_regex(r"설정 [0-9.]+%")
         tap("미리 보기 · 공유", scroll=True)
         time.sleep(3)
         shot("result_live_story")
@@ -124,8 +153,10 @@ def main():
         tap("광고 보기")
         time.sleep(12)
         shot("rewarded_test_ad")
-        adb("shell", "input", "keyevent", "BACK")
+        time.sleep(20)  # 테스트 보상형 영상이 끝나 보상이 지급될 때까지
+        close_fullscreen_ad()
         time.sleep(2)
+        shot("after_reward")
         adb("shell", "input", "keyevent", "BACK")
         time.sleep(2)
     else:
@@ -134,10 +165,12 @@ def main():
         time.sleep(10)
         shot("home_after_publish")
         tap("개봉하기", timeout=40, scroll=True)
-        time.sleep(10)
+        time.sleep(8)
         shot("interstitial_test_ad")
-        adb("shell", "input", "keyevent", "BACK")
-        time.sleep(3)
+        if not find("공유", exact=True):  # 결과 화면의 공유 버튼
+            close_fullscreen_ad()
+        wait("공유", 30)
+        time.sleep(2)
         shot("published_result")
         adb("shell", "input", "keyevent", "BACK")
         time.sleep(2)

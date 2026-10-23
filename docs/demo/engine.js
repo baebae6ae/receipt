@@ -64,6 +64,7 @@ const CardText = {
   duration(ms) {
     const total = Math.floor(ms / MINUTE);
     const h = Math.floor(total / 60), m = total % 60;
+    if (total === 0 && ms > 0) return R('fmt_under_minute');
     if (h === 0) return R('fmt_minutes', m);
     if (m === 0) return R('fmt_hours', h);
     return R('fmt_hours_minutes', h, m);
