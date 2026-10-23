@@ -18,6 +18,23 @@ private val ReceiptColors = lightColorScheme(
     onSurfaceVariant = InkSoft,
     outline = Ink,
     outlineVariant = Rule,
+    // 기본값이 보라 계열이라 칩·스위치·대화상자 색이 흑백에서 벗어난다. 컨테이너 색을 모두 지정한다.
+    primaryContainer = PaperDim,
+    onPrimaryContainer = Ink,
+    secondaryContainer = Ink,
+    onSecondaryContainer = Paper,
+    tertiary = Ink,
+    onTertiary = Paper,
+    tertiaryContainer = PaperDim,
+    onTertiaryContainer = Ink,
+    surfaceTint = Paper,
+    surfaceDim = PaperDim,
+    surfaceBright = Paper,
+    surfaceContainerLowest = Paper,
+    surfaceContainerLow = Paper,
+    surfaceContainer = Paper,
+    surfaceContainerHigh = Paper,
+    surfaceContainerHighest = PaperDim,
 )
 
 @Composable
