@@ -7,12 +7,19 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
 
+    <!-- 걸음 수 센서(TYPE_STEP_COUNTER). Android 10 이상에서 런타임 권한. -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
     <!-- Android 9 에서만 갤러리 저장에 필요. 10 이상은 MediaStore 에 권한 없이 저장한다. -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
     <!-- QUERY_ALL_PACKAGES 대신: 런처 앱(이름 조회)과 홈 런처(화면 시간에서 제외)만 보이게 한다. -->
+    <uses-feature
+        android:name="android.hardware.sensor.stepcounter"
+        android:required="false" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />

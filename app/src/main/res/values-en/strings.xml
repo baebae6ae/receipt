@@ -148,4 +148,9 @@
     <!-- Settings -->
     <string name="settings_permissions">Permissions</string>
     <string name="settings_permissions_desc">Usage access, physical activity, notifications</string>
+
+    <string name="permission_allow">Allow</string>
+    <string name="permission_activity_title">Physical activity (steps)</string>
+    <string name="permission_activity_desc">Reads the phone\'s step counter every hour to calculate daily steps. Without it, steps and \'Walking\' are left off the label.</string>
+    <string name="permission_activity_unavailable">This device has no step sensor, so steps won\'t be shown.</string>
 </resources>

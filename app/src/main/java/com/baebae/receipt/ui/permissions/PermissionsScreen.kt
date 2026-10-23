@@ -1,5 +1,13 @@
 package com.baebae.receipt.ui.permissions
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.baebae.receipt.R
+import com.baebae.receipt.data.steps.StepSensor
 import com.baebae.receipt.data.usage.UsagePermission
 import com.baebae.receipt.ui.components.RuledBox
 import com.baebae.receipt.ui.components.SquareOutlinedButton
@@ -32,10 +41,18 @@ import com.baebae.receipt.ui.components.SquareOutlinedButton
 fun PermissionsScreen(onDone: () -> Unit) {
     val context = LocalContext.current
     var usageGranted by remember { mutableStateOf(UsagePermission.isGranted(context)) }
+    var activityGranted by remember { mutableStateOf(StepSensor.hasPermission(context)) }
+    // 한 번 거절되면 시스템 대화상자가 다시 뜨지 않을 수 있어 앱 정보 화면으로 보낸다.
+    var activityDenied by remember { mutableStateOf(false) }
+    val activityLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        activityGranted = granted
+        activityDenied = !granted
+    }
 
     // 설정 화면에서 돌아올 때마다 다시 확인한다.
     LifecycleResumeEffect(Unit) {
         usageGranted = UsagePermission.isGranted(context)
+        activityGranted = StepSensor.hasPermission(context)
         onPauseOrDispose { }
     }
 
@@ -57,10 +74,40 @@ fun PermissionsScreen(onDone: () -> Unit) {
             onRequest = { UsagePermission.openSettings(context) },
         )
 
+        if (StepSensor.isAvailable(context)) {
+            PermissionItem(
+                title = stringResource(R.string.permission_activity_title),
+                description = stringResource(R.string.permission_activity_desc),
+                granted = activityGranted,
+                actionLabel = stringResource(if (activityDenied) R.string.permission_open_settings else R.string.permission_allow),
+                onRequest = {
+                    if (activityDenied || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                        openAppDetails(context)
+                    } else {
+                        activityLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                    }
+                },
+            )
+        } else {
+            RuledBox {
+                Text(text = stringResource(R.string.permission_activity_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(R.string.permission_activity_unavailable),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
         Button(onClick = onDone, shape = RoundedCornerShape(0.dp), modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.permissions_done))
         }
     }
+}
+
+internal fun openAppDetails(context: Context) {
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+    runCatching { context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
 }
 
 @Composable

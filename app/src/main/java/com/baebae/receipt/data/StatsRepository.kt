@@ -1,12 +1,14 @@
 package com.baebae.receipt.data
 
 import android.content.Context
+import com.baebae.receipt.data.steps.StepRepository
 import com.baebae.receipt.data.usage.DaySummary
 import com.baebae.receipt.data.usage.InstalledApps
 import com.baebae.receipt.data.usage.UsageCollector
 import com.baebae.receipt.data.usage.UsagePermission
 import com.baebae.receipt.domain.AppUsage
 import com.baebae.receipt.domain.WeeklyStats
+import com.baebae.receipt.util.WeekMath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -17,6 +19,7 @@ class StatsRepository(
     private val context: Context,
     private val collector: UsageCollector,
     private val installedApps: InstalledApps,
+    private val steps: StepRepository,
 ) {
 
     fun hasUsagePermission(): Boolean = UsagePermission.isGranted(context)
@@ -31,11 +34,13 @@ class StatsRepository(
                 .takeWhile { !it.isAfter(lastDay) }
                 .map { collector.summarizeDay(it, labels.keys, nowMillis, now.zone) }
                 .toList()
-            merge(weekStart, days, labels)
+            val weekStartMillis = WeekMath.startOfDayMillis(weekStart, now.zone)
+            val weekEndMillis = minOf(WeekMath.startOfDayMillis(weekStart.plusDays(7), now.zone), nowMillis)
+            merge(weekStart, days, labels, steps.stepsBetween(weekStartMillis, weekEndMillis))
         }
 
     companion object {
-        fun merge(weekStart: LocalDate, days: List<DaySummary>, labels: Map<String, String>): WeeklyStats {
+        fun merge(weekStart: LocalDate, days: List<DaySummary>, labels: Map<String, String>, steps: Long): WeeklyStats {
             val appTotals = HashMap<String, Long>()
             days.forEach { day -> day.appMs.forEach { (pkg, ms) -> appTotals[pkg] = (appTotals[pkg] ?: 0L) + ms } }
             val apps = appTotals.entries
@@ -47,9 +52,9 @@ class StatsRepository(
                 apps = apps,
                 screenMs = apps.sumOf { it.foregroundMs },
                 unlocks = days.sumOf { it.unlocks },
-                steps = 0,
-                sleepTotalMs = 0,
-                sleepNights = 0,
+                steps = steps,
+                sleepTotalMs = days.sumOf { it.sleepMs ?: 0L },
+                sleepNights = days.count { it.sleepMs != null },
                 lateNightMs = days.sumOf { it.lateNightMs },
             )
         }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.baebae.receipt.work.CollectWorker
 
 class ReceiptApplication : Application() {
     lateinit var container: AppContainer
@@ -12,6 +13,7 @@ class ReceiptApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        CollectWorker.schedule(this)
     }
 }
 

@@ -149,4 +149,9 @@
     <!-- 설정 -->
     <string name="settings_permissions">권한</string>
     <string name="settings_permissions_desc">사용 기록 접근, 신체 활동, 알림</string>
+
+    <string name="permission_allow">허용하기</string>
+    <string name="permission_activity_title">신체 활동 (걸음 수)</string>
+    <string name="permission_activity_desc">휴대폰의 걸음 센서 누적값을 1시간마다 기록해 하루 걸음 수를 계산합니다. 끄면 걸음 수와 \'걷기\' 함량이 빠집니다.</string>
+    <string name="permission_activity_unavailable">이 기기에는 걸음 센서가 없어 걸음 수는 표시되지 않습니다.</string>
 </resources>

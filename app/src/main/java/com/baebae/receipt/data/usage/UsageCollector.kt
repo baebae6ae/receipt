@@ -15,6 +15,8 @@ data class DaySummary(
     val unlocks: Int,
     /** 00:00~05:00 사이 전경 시간 합. */
     val lateNightMs: Long,
+    /** 이날 아침에 끝난 밤잠 추정치. 판단할 수 없으면 null. */
+    val sleepMs: Long?,
 ) {
     val screenMs: Long get() = appMs.values.sum()
 }
@@ -35,8 +37,9 @@ class UsageCollector(context: Context) {
     ): DaySummary {
         val dayStart = WeekMath.startOfDayMillis(date, zone)
         val dayEnd = minOf(WeekMath.startOfDayMillis(date.plusDays(1), zone), now)
-        if (dayEnd <= dayStart) return DaySummary(date, emptyMap(), 0, 0)
+        if (dayEnd <= dayStart) return DaySummary(date, emptyMap(), 0, 0, null)
         val lateNightEnd = dayStart + LATE_NIGHT_HOURS * HOUR
+        val queryStart = dayStart - LOOKBACK_MS
 
         val appMs = HashMap<String, Long>()
         var lateNightMs = 0L
@@ -54,7 +57,11 @@ class UsageCollector(context: Context) {
             }
         }
 
-        val events = usm.queryEvents(dayStart - LOOKBACK_MS, dayEnd)
+        val sleep = SleepEstimator(dayStart, now)
+        var screenOffSince: Long? = null
+        var sawScreenEvent = false
+
+        val events = usm.queryEvents(queryStart, dayEnd)
         val event = UsageEvents.Event()
         while (events.hasNextEvent()) {
             events.getNextEvent(event)
@@ -62,16 +69,28 @@ class UsageCollector(context: Context) {
             when (event.eventType) {
                 ACTIVITY_RESUMED -> tracker.resumed(event.packageName, event.className.orEmpty(), t)
                 ACTIVITY_PAUSED, ACTIVITY_STOPPED -> tracker.paused(event.packageName, event.className.orEmpty(), t)
-                SCREEN_NON_INTERACTIVE, DEVICE_SHUTDOWN -> tracker.closeAll(t)
-                SCREEN_INTERACTIVE -> if (t in dayStart until dayEnd) screenOn++
+                SCREEN_NON_INTERACTIVE, DEVICE_SHUTDOWN -> {
+                    tracker.closeAll(t)
+                    if (screenOffSince == null) screenOffSince = t
+                    sawScreenEvent = true
+                }
+                SCREEN_INTERACTIVE -> {
+                    if (t in dayStart until dayEnd) screenOn++
+                    // 조회 구간의 첫 화면 이벤트가 '켜짐'이면 그 전까지는 꺼져 있었던 것이다.
+                    val offStart = screenOffSince ?: if (!sawScreenEvent) queryStart else null
+                    if (offStart != null) sleep.offInterval(offStart, t, ongoing = false)
+                    screenOffSince = null
+                    sawScreenEvent = true
+                }
                 KEYGUARD_HIDDEN -> if (t in dayStart until dayEnd) keyguardHidden++
             }
         }
         tracker.closeAll(dayEnd)
+        screenOffSince?.let { sleep.offInterval(it, dayEnd, ongoing = true) }
 
         // 잠금 화면을 쓰지 않는 기기는 KEYGUARD_HIDDEN 이 없으므로 화면 켜짐 횟수로 대신한다.
         val unlocks = if (keyguardHidden > 0) keyguardHidden else screenOn
-        return DaySummary(date, appMs, unlocks, lateNightMs)
+        return DaySummary(date, appMs, unlocks, lateNightMs, sleep.result())
     }
 
     /** 패키지별로 RESUMED 상태인 액티비티 집합을 들고, 집합이 비었다 차는 순간을 세션 경계로 본다. */
@@ -100,6 +119,8 @@ class UsageCollector(context: Context) {
 
     companion object {
         const val HOUR = 3_600_000L
+        /** 이 길이 이상 화면이 꺼져 있어야 수면으로 본다. */
+        const val MIN_SLEEP_MS = 2 * HOUR
         const val LATE_NIGHT_HOURS = 5L
         private const val LOOKBACK_MS = 12 * HOUR
 
@@ -114,4 +135,22 @@ class UsageCollector(context: Context) {
 
         fun overlap(s1: Long, e1: Long, s2: Long, e2: Long): Long = maxOf(0L, minOf(e1, e2) - maxOf(s1, s2))
     }
+}
+
+/**
+ * 밤 시간대(전날 21:00 ~ 당일 12:00) 가운데 가장 긴 화면 꺼짐 구간을 수면으로 추정한다.
+ * 아직 끝나지 않은 꺼짐 구간은 창이 닫히기 전이면 확정하지 않는다(지금 자는 중일 수 있다).
+ */
+internal class SleepEstimator(dayStart: Long, private val now: Long) {
+    val windowStart = dayStart - 3 * UsageCollector.HOUR
+    val windowEnd = dayStart + 12 * UsageCollector.HOUR
+    private var longest = 0L
+
+    fun offInterval(start: Long, end: Long, ongoing: Boolean) {
+        if (ongoing && now < windowEnd) return
+        val length = UsageCollector.overlap(start, end, windowStart, windowEnd)
+        if (length > longest) longest = length
+    }
+
+    fun result(): Long? = longest.takeIf { it >= UsageCollector.MIN_SLEEP_MS }
 }
