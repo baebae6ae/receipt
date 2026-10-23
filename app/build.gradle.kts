@@ -73,4 +73,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.junit)
+    // 로컬 단위 테스트의 android.jar 는 org.json 이 비어 있어(Stub!) 실제 구현을 넣는다.
+    testImplementation(libs.org.json)
 }
