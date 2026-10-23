@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        appContainer.ads.initialize(this)
         if (savedInstanceState == null) pendingWeek.value = weekFrom(intent)
         setContent {
             ReceiptTheme {

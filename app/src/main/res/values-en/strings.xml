@@ -187,4 +187,15 @@
     <string name="permission_notification_desc">Get notified when the label is published every Sunday evening. Notifications never show your usage data.</string>
     <string name="home_new_label_title">A new label is out</string>
     <string name="home_new_label_open">Open</string>
+
+    <!-- Ads / rewards -->
+    <string name="template_locked">%1$s · Ad</string>
+    <string name="reward_unlock_title">\'%1$s\' template</string>
+    <string name="reward_unlock_text">Watch a short ad to the end to keep this template.</string>
+    <string name="reward_watch">Watch ad</string>
+    <string name="watermark_remove">Remove watermark</string>
+    <string name="watermark_credits">%1$d left · one save/share per ad</string>
+    <string name="reward_watermark_text">Watch a short ad to the end to save or share this card once without the watermark.</string>
+    <string name="ad_loading">Loading ad…</string>
+    <string name="ad_reward_failed">The ad wasn\'t completed or couldn\'t be loaded.</string>
 </resources>

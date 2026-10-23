@@ -1,6 +1,7 @@
 package com.baebae.receipt
 
 import android.content.Context
+import com.baebae.receipt.ads.AdsManager
 import com.baebae.receipt.data.AppPrefs
 import com.baebae.receipt.data.CardRepository
 import com.baebae.receipt.data.PhraseEngine
@@ -20,5 +21,6 @@ class AppContainer(context: Context) {
     val steps = StepRepository(appContext, database.stepSnapshots())
     val stats = StatsRepository(appContext, UsageCollector(appContext), installedApps, steps, database.dailyStats())
     val phrases = PhraseEngine(appContext, prefs)
+    val ads = AdsManager(prefs)
     val cards = CardRepository(appContext, prefs, stats, steps, database.weeklyCards(), phrases)
 }

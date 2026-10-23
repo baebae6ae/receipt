@@ -83,6 +83,7 @@ private fun ResultContent(stored: StoredCard, onChange: (StoredCard) -> Unit) {
     }
     val card = remember(stored) { cards.toLabel(stored) }
     val layer = rememberCardLayer()
+    val rewards = rememberRewardState()
 
     // 발행된 카드만 저장한다. 진행 중인 주는 화면을 떠나면 원래대로 돌아간다.
     fun update(next: StoredCard) {
@@ -116,9 +117,10 @@ private fun ResultContent(stored: StoredCard, onChange: (StoredCard) -> Unit) {
             modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp),
             contentModifier = Modifier.recordInto(layer),
         ) {
-            LabelCardView(card, template, format, showWatermark = true)
+            LabelCardView(card, template, format, showWatermark = !rewards.removeWatermark)
         }
-        CardExportBar(layer = layer, fileName = exportFileName(card, format))
+        CardExportBar(layer = layer, fileName = exportFileName(card, format), onExported = { rewards.onExported() })
+        WatermarkToggle(rewards)
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CardFormat.entries.forEach { option ->
@@ -127,13 +129,24 @@ private fun ResultContent(stored: StoredCard, onChange: (StoredCard) -> Unit) {
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             CardTemplate.entries.forEach { option ->
+                val available = rewards.isAvailable(option)
                 FilterChip(
                     selected = template == option,
-                    onClick = { update(stored.copy(template = option.name)) },
-                    label = { Text(stringResource(option.label)) },
+                    onClick = {
+                        if (available) update(stored.copy(template = option.name))
+                        else rewards.askUnlock(option) { update(stored.copy(template = option.name)) }
+                    },
+                    label = {
+                        Text(
+                            if (available) stringResource(option.label)
+                            else stringResource(R.string.template_locked, stringResource(option.label)),
+                        )
+                    },
                 )
             }
         }
+
+        RewardDialogs(rewards)
 
         SectionTitle(stringResource(R.string.result_edit_title))
         EditList(

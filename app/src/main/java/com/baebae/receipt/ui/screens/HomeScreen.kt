@@ -27,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.baebae.receipt.R
+import com.baebae.receipt.ads.AdBanner
 import com.baebae.receipt.appContainer
 import com.baebae.receipt.data.StoredCard
 import com.baebae.receipt.domain.LabelCard
@@ -73,66 +74,69 @@ fun HomeScreen(onOpenResult: () -> Unit, onOpenPublished: (week: Long) -> Unit, 
     val publishFormatter = DateTimeFormatter.ofPattern(stringResource(R.string.fmt_publish_datetime), Locale.getDefault())
     val nextPublish = remember { WeekMath.nextPublishAt() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        Text(text = stringResource(R.string.home_title), style = MaterialTheme.typography.headlineMedium)
-        Text(
-            text = stringResource(R.string.home_next_publish, nextPublish.format(publishFormatter)),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
-
-        unrevealed?.let { card ->
-            RuledBox {
-                Text(text = stringResource(R.string.home_new_label_title), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = "${CardText.lot(card.weekStart)}  ${CardText.dateRange(card.weekStart, card.stats.weekEnd)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Button(
-                    onClick = { onOpenPublished(card.weekStart.toEpochDay()) },
-                    shape = RoundedCornerShape(0.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text(stringResource(R.string.home_new_label_open)) }
-            }
-        }
-
-        if (!hasPermission) {
-            RuledBox {
-                Text(text = stringResource(R.string.home_no_permission), style = MaterialTheme.typography.bodyMedium)
-                SquareOutlinedButton(
-                    text = stringResource(R.string.home_open_permissions),
-                    onClick = onOpenPermissions,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
-
-        val card = liveCard ?: sample
-        ScaledCard(
-            format = CardFormat.SQUARE,
+    Column(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable(enabled = liveCard != null, onClick = onOpenResult),
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            LabelCardView(card, CardTemplate.CLASSIC, CardFormat.SQUARE, showWatermark = true)
-        }
-        Text(
-            text = stringResource(if (liveCard != null) R.string.home_live_caption else R.string.home_sample_caption),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (liveCard != null) {
-            Button(onClick = onOpenResult, shape = RoundedCornerShape(0.dp), modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.home_open_card))
+            Text(text = stringResource(R.string.home_title), style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = stringResource(R.string.home_next_publish, nextPublish.format(publishFormatter)),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp)
+
+            unrevealed?.let { card ->
+                RuledBox {
+                    Text(text = stringResource(R.string.home_new_label_title), style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "${CardText.lot(card.weekStart)}  ${CardText.dateRange(card.weekStart, card.stats.weekEnd)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Button(
+                        onClick = { onOpenPublished(card.weekStart.toEpochDay()) },
+                        shape = RoundedCornerShape(0.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(stringResource(R.string.home_new_label_open)) }
+                }
+            }
+
+            if (!hasPermission) {
+                RuledBox {
+                    Text(text = stringResource(R.string.home_no_permission), style = MaterialTheme.typography.bodyMedium)
+                    SquareOutlinedButton(
+                        text = stringResource(R.string.home_open_permissions),
+                        onClick = onOpenPermissions,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+
+            val card = liveCard ?: sample
+            ScaledCard(
+                format = CardFormat.SQUARE,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(enabled = liveCard != null, onClick = onOpenResult),
+            ) {
+                LabelCardView(card, CardTemplate.CLASSIC, CardFormat.SQUARE, showWatermark = true)
+            }
+            Text(
+                text = stringResource(if (liveCard != null) R.string.home_live_caption else R.string.home_sample_caption),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (liveCard != null) {
+                Button(onClick = onOpenResult, shape = RoundedCornerShape(0.dp), modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.home_open_card))
+                }
             }
         }
+        AdBanner()
     }
 }

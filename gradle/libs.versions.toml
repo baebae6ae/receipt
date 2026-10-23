@@ -10,8 +10,10 @@ ksp = "2.2.20-2.0.4"
 room = "2.7.2"
 work = "2.10.2"
 junit = "4.13.2"
+playServicesAds = "24.4.0"
 
 [libraries]
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
