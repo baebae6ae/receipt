@@ -20,16 +20,47 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # 업로드 키가 Secrets 에 있으면 release(AAB)를 그 키로 서명한다. 없으면 debug 키(업로드 불가).
+      - name: Restore upload keystore
+        id: keystore
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$UPLOAD_KEYSTORE_BASE64" ]; then
+            echo "$UPLOAD_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "UPLOAD_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+            echo "signed=upload" >> "$GITHUB_OUTPUT"
+          else
+            echo "signed=debug-NOT-for-upload" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build debug APK, release APK and release AAB
+        env:
+          UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_PASSWORD }}
+          UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: ./gradlew assembleDebug assembleRelease bundleRelease --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: nalabel-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+      # 플레이 콘솔에 올리는 파일. 이름에 서명 상태를 붙인다.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nalabel-release-aab-${{ steps.keystore.outputs.signed }}
+          path: app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nalabel-release-apk-${{ steps.keystore.outputs.signed }}
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v4
@@ -38,11 +69,12 @@ jobs:
           name: reports
           path: |
             app/build/reports/
+            app/build/outputs/mapping/
             app/schemas/
           if-no-files-found: ignore
 
-  # 실제 APK 를 안드로이드 14 에뮬레이터에 깔고 눌러 본다(크래시 확인 + 스크린샷).
-  # 결과는 아티팩트와 ci-screens 브랜치에 올린다.
+  # 출시될 것과 같은 release 빌드(R8 축소 적용)를 안드로이드 14 에뮬레이터에 깔고 눌러 본다.
+  # 크래시 확인 + 스크린샷. 결과는 아티팩트와 ci-screens 브랜치에 올린다.
   emulator-smoke:
     needs: build
     runs-on: ubuntu-latest
@@ -54,7 +86,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: nalabel-debug-apk
+          pattern: nalabel-release-apk-*
+          merge-multiple: true
 
       - name: Enable KVM
         run: |
@@ -71,7 +104,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: bash ci/smoke.sh app-debug.apk ci-out
+          script: bash ci/smoke.sh app-release.apk ci-out
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -88,7 +121,7 @@ jobs:
           git init -q -b ci-screens
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          printf '# 에뮬레이터 실행 결과\n\n커밋 %s (자동 생성, 매 실행마다 덮어씀)\n' "${GITHUB_SHA::7}" > README.md
+          printf '# 에뮬레이터 실행 결과 (release 빌드)\n\n커밋 %s (자동 생성, 매 실행마다 덮어씀)\n' "${GITHUB_SHA::7}" > README.md
           git add -A
           git commit -qm "emulator smoke ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-screens

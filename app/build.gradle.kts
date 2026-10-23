@@ -15,6 +15,7 @@ android {
         applicationId = "com.baebae.receipt"
         minSdk = 28
         targetSdk = 36
+        // 플레이에 올릴 때마다 versionCode 는 반드시 이전보다 커야 한다.
         versionCode = 1
         versionName = "0.1.0"
 
@@ -25,8 +26,23 @@ android {
         buildConfigField("String", "AD_UNIT_REWARDED", "\"ca-app-pub-3940256099942544/5224354917\"")
     }
 
+    // 플레이 업로드 키. 키 파일·비밀번호는 저장소에 넣지 않고 환경 변수(CI 에서는 GitHub Secrets)로만 받는다.
+    // 없으면 release 도 debug 키로 서명한다: 기기 테스트는 되지만 플레이 콘솔에는 올릴 수 없다.
+    val uploadKeystore = System.getenv("UPLOAD_KEYSTORE_FILE")?.let { file(it) }?.takeIf { it.exists() }
+    signingConfigs {
+        if (uploadKeystore != null) {
+            create("upload") {
+                storeFile = uploadKeystore
+                storePassword = System.getenv("UPLOAD_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("UPLOAD_KEY_ALIAS")
+                keyPassword = System.getenv("UPLOAD_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
