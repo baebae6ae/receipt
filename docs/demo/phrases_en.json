@@ -1,0 +1,468 @@
+{
+ "version": 1,
+ "fallbackTopApp": "the phone",
+ "categories": {
+  "caution": {
+   "pick": 2,
+   "groups": [
+    {
+     "id": "late_night",
+     "priority": 10,
+     "when": [
+      {
+       "metric": "lateNightRatio",
+       "op": ">",
+       "value": 0.2
+      }
+     ],
+     "phrases": [
+      "May spoil if opened after 2 a.m. Go to sleep immediately.",
+      "Produced mainly on the night shift. Daytime quality not guaranteed.",
+      "Screen time consumed after midnight is absorbed the next morning.",
+      "Night-batch units may be low in moisture (tears).",
+      "Overheating detected on the night production line. Adjust operating hours.",
+      "After midnight, the label “just 5 more minutes” may be inaccurate.",
+      "Made under late-night lighting (max brightness). Color may appear darker.",
+      "Contains late-night use. May cause drowsiness before noon.",
+      "Manufactured in a facility that also processes 3 a.m.",
+      "If signs of night-time opening are present, rest thoroughly before use."
+     ]
+    },
+    {
+     "id": "short_sleep",
+     "priority": 9,
+     "when": [
+      {
+       "metric": "avgSleepHours",
+       "op": "<",
+       "value": 6.0
+      }
+     ],
+     "phrases": [
+      "Sleep content below reference. Allow to rest fully before use.",
+      "Short aging period. Flavor may be rough.",
+      "Shipped under-rested. May temporarily improve when taken with coffee.",
+      "Low in sleep. A sharp drop in quality may occur around 3 p.m.",
+      "Made from dough that was not allowed to rest. May crumble easily.",
+      "Caffeine dependency warning: under-slept individuals should use with caution.",
+      "Some resting steps were skipped during production.",
+      "Sediment (dark circles) may form due to lack of sleep. Quality is not affected.",
+      "Manufactured in a facility that also processes all-nighters.",
+      "Below rest content. Weekend top-up recommended."
+     ]
+    },
+    {
+     "id": "top_app_dominant",
+     "priority": 8,
+     "when": [
+      {
+       "metric": "topAppShare",
+       "op": ">",
+       "value": 0.45
+      },
+      {
+       "metric": "dailyScreenHours",
+       "op": ">=",
+       "value": 1.0
+      }
+     ],
+     "phrases": [
+      "High in a single ingredient ({topApp}). Other flavors may be hard to detect.",
+      "Individuals sensitive to {topApp} should limit intake.",
+      "High-{topApp} product. Do not exceed the daily serving.",
+      "Uneven ingredients may cause nutritional imbalance.",
+      "Ingredients other than {topApp} are present in trace amounts only.",
+      "Overuse of a single ingredient may result in a monotonous taste.",
+      "Most processing took place at the {topApp} plant.",
+      "{topApp} may interfere with absorption of other ingredients.",
+      "Dependency on a specific ingredient ({topApp}) has been identified.",
+      "This production line is effectively dedicated to {topApp}."
+     ]
+    },
+    {
+     "id": "heavy_screen",
+     "priority": 7,
+     "when": [
+      {
+       "metric": "dailyScreenHours",
+       "op": ">=",
+       "value": 6.0
+      }
+     ],
+     "phrases": [
+      "Screen time greatly exceeds the daily value. Avoid overconsumption.",
+      "Prolonged exposure may cause dry eyes. After opening, look into the distance.",
+      "Produced with excessive use of thumbs.",
+      "High-screen product. Do not consume with the neck tilted forward.",
+      "Overconsumption may dull the sense of time.",
+      "Most information consumed by screen may not be retained.",
+      "Prolonged use may be accompanied by low battery.",
+      "Contains large amounts of scrolling. May be difficult to stop.",
+      "No serving size defined. May be consumed in one sitting.",
+      "Do not store at maximum brightness for extended periods."
+     ]
+    },
+    {
+     "id": "many_unlocks",
+     "priority": 6,
+     "when": [
+      {
+       "metric": "dailyUnlocks",
+       "op": ">=",
+       "value": 100.0
+      }
+     ],
+     "phrases": [
+      "Opened far too often. Once opened, finish in one sitting.",
+      "Frequent opening may reduce freshness.",
+      "A habit of opening for no particular reason has been detected.",
+      "This product tends to open even without notifications.",
+      "Repeated opening may damage the packaging.",
+      "Average daily openings exceed the reference.",
+      "You may forget why you opened it.",
+      "High in unlocks. May reduce concentration.",
+      "Checked even when there is nothing to check.",
+      "Micro-scratches (attention damage) from frequent opening are not grounds for exchange."
+     ]
+    },
+    {
+     "id": "low_steps",
+     "priority": 5,
+     "when": [
+      {
+       "metric": "dailySteps",
+       "op": "<",
+       "value": 3000.0
+      }
+     ],
+     "phrases": [
+      "Walking present in trace amounts only. Shake (move) gently after use.",
+      "Produced mainly indoors.",
+      "Stored in one position for too long. May harden.",
+      "Low in walking. Quality may drop in front of stairs.",
+      "No added exercise.",
+      "Short distance traveled: high freshness, low vitality.",
+      "Stored in prolonged contact with a chair.",
+      "Manufactured in a facility that also processes sofas.",
+      "Low activity may cause contents to settle. Shake well before use.",
+      "Below the recommended daily distance. Carry on foot for short trips."
+     ]
+    },
+    {
+     "id": "high_steps",
+     "priority": 5,
+     "when": [
+      {
+       "metric": "dailySteps",
+       "op": ">=",
+       "value": 10000.0
+      }
+     ],
+     "phrases": [
+      "High in walking. May taste slightly tired.",
+      "Shipped over long distances. Excellent freshness.",
+      "Contents may separate due to high activity. Quality is not affected.",
+      "Contains large amounts of soles.",
+      "High-activity product. Rest well after use.",
+      "Made on the move. Relatively low in screen time.",
+      "Walking exceeds the reference. Check shoe condition.",
+      "Manufactured in a facility that also processes stairs.",
+      "Heavy legs from excessive travel are temporary.",
+      "Frequently exposed to outside air."
+     ]
+    },
+    {
+     "id": "long_sleep",
+     "priority": 4,
+     "when": [
+      {
+       "metric": "avgSleepHours",
+       "op": ">=",
+       "value": 8.5
+      }
+     ],
+     "phrases": [
+      "Well-aged product. Smooth flavor.",
+      "High in sleep. May activate slowly in the morning.",
+      "Long resting process yields a tender texture.",
+      "Stored in prolonged contact with a blanket.",
+      "High in sleep: response to alarms may be weak.",
+      "Slow-aged at low temperature.",
+      "Well rested. Resistant to external shocks.",
+      "Sleep exceeds the reference but is harmless.",
+      "Aging progressed significantly over the weekend.",
+      "Manufactured in a facility that also processes pillows."
+     ]
+    },
+    {
+     "id": "light_screen",
+     "priority": 4,
+     "when": [
+      {
+       "metric": "dailyScreenHours",
+       "op": "<",
+       "value": 2.0
+      }
+     ],
+     "phrases": [
+      "Low-screen product.",
+      "Digital additives minimized.",
+      "Made by frequently putting the phone down.",
+      "Low screen exposure. Original color preserved.",
+      "Notifications may be checked late. Quality is not affected.",
+      "Low-screen process. Low eye fatigue.",
+      "Reply speed may differ from what is labeled.",
+      "Rich in offline ingredients.",
+      "Made primarily with off-screen ingredients.",
+      "Side effect: phone battery lasts longer."
+     ]
+    },
+    {
+     "id": "default",
+     "priority": 0,
+     "when": [],
+     "phrases": [
+      "Manufactured in a facility that also processes everyday life.",
+      "Taste may vary with mood.",
+      "May taste slightly bitter if opened on a Monday.",
+      "Opening may cause sighing. Use caution.",
+      "Made in weekly batches. Ingredients may change every week.",
+      "Unused portions do not carry over to next week.",
+      "Contents may differ from expectations. This is a normal product.",
+      "Some plans may be omitted during production.",
+      "Do not use for purposes other than intended.",
+      "Not for comparison. Do not compare with other products."
+     ]
+    }
+   ]
+  },
+  "storage": {
+   "pick": 1,
+   "groups": [
+    {
+     "id": "late_night",
+     "priority": 10,
+     "when": [
+      {
+       "metric": "lateNightRatio",
+       "op": ">",
+       "value": 0.2
+      }
+     ],
+     "phrases": [
+      "Store in bed before midnight.",
+      "Keep away from direct light (max brightness). Store in a dark place.",
+      "Seal the screen shut before the small hours.",
+      "After midnight, store away from the charger.",
+      "At night, keep the phone out of reach.",
+      "Store lying flat with the lights off at night.",
+      "Do not store together with a phone in bed.",
+      "Do not open after midnight. Open the next morning.",
+      "Store in a cool, dark bedroom for 7 hours or more.",
+      "Keep apart from screens for 1 hour before bed."
+     ]
+    },
+    {
+     "id": "heavy_screen",
+     "priority": 7,
+     "when": [
+      {
+       "metric": "dailyScreenHours",
+       "op": ">=",
+       "value": 6.0
+      }
+     ],
+     "phrases": [
+      "Store at least 30 cm away from a screen.",
+      "After 50 minutes of use, store off-screen for 10 minutes.",
+      "After opening, turn off the screen as soon as possible.",
+      "Store upright with good posture.",
+      "Do not store with the head bowed at the same angle for long.",
+      "Keep moist by blinking often.",
+      "Ventilate at least once a day by looking into the distance.",
+      "Dry periodically under natural outdoor light.",
+      "Store separately from the phone.",
+      "Portion out screen time in advance."
+     ]
+    },
+    {
+     "id": "short_sleep",
+     "priority": 9,
+     "when": [
+      {
+       "metric": "avgSleepHours",
+       "op": "<",
+       "value": 6.0
+      }
+     ],
+     "phrases": [
+      "Between midnight and 6 a.m., store in a cool, dark place (bedroom).",
+      "Keep at rest for at least 7 hours a day.",
+      "After opening, top up with a nap.",
+      "Do not store with caffeine.",
+      "Long, cool storage recommended on weekends.",
+      "Do not transport long distances while under-rested.",
+      "No added caffeine after 2 p.m.",
+      "Age fully in a cool, quiet place.",
+      "Allow to thaw naturally, without an alarm.",
+      "Store (go to bed) early this week."
+     ]
+    },
+    {
+     "id": "low_steps",
+     "priority": 5,
+     "when": [
+      {
+       "metric": "dailySteps",
+       "op": "<",
+       "value": 3000.0
+      }
+     ],
+     "phrases": [
+      "Air outdoors at least once a day.",
+      "Do not store seated for long periods.",
+      "Stairs preferred over elevators.",
+      "Carry on foot for short distances.",
+      "Move at room temperature for 10 minutes after meals.",
+      "Stand up and shake every hour.",
+      "Do not store pressed against a sofa for long.",
+      "Expose to outside air while the sun is up.",
+      "Get off one stop early and walk to storage.",
+      "May stiffen in long indoor storage. Stretch periodically."
+     ]
+    },
+    {
+     "id": "high_steps",
+     "priority": 5,
+     "when": [
+      {
+       "metric": "dailySteps",
+       "op": ">=",
+       "value": 10000.0
+      }
+     ],
+     "phrases": [
+      "After returning home, store with legs elevated.",
+      "Rehydrate well after transport.",
+      "Soaking feet in warm water helps preserve quality.",
+      "Store in comfortable shoes.",
+      "Rest thoroughly at room temperature after activity.",
+      "Avoid excessive long-distance transport.",
+      "Maintain shape with stretching after walking.",
+      "On high-mileage days, store (go to bed) early.",
+      "Wear a hat when transported under direct sunlight.",
+      "Avoid excessive sugar replenishment after activity."
+     ]
+    },
+    {
+     "id": "default",
+     "priority": 0,
+     "when": [],
+     "phrases": [
+      "Store in a cool, dry place away from direct sunlight.",
+      "Once opened, consume the weekend as soon as possible.",
+      "Store at room temperature (15–25 °C), at ease.",
+      "Avoid humid places (Monday mornings).",
+      "Reseal after opening and store until next week.",
+      "Protect from shocks (work messages).",
+      "Do not refrigerate. Humans are a room-temperature product.",
+      "Keep the phone out of reach. Keep this product in bed.",
+      "Quality lasts longer when stored next to someone you like.",
+      "Store where it won’t be compared with other products (people)."
+     ]
+    }
+   ]
+  },
+  "expiry": {
+   "pick": 1,
+   "groups": [
+    {
+     "id": "short_sleep",
+     "priority": 9,
+     "when": [
+      {
+       "metric": "avgSleepHours",
+       "op": "<",
+       "value": 6.0
+      }
+     ],
+     "phrases": [
+      "Before 7 hours of sleep tonight",
+      "Before the next nap",
+      "Until the coffee wears off",
+      "7 days from manufacture (extendable with extra sleep)",
+      "Before 3 p.m. today",
+      "Before the weekend lie-in",
+      "See alarm time",
+      "Next Monday, 9 a.m. (drowsiness warning)",
+      "Until fully rested",
+      "Not shown (illegible due to lack of sleep)"
+     ]
+    },
+    {
+     "id": "late_night",
+     "priority": 10,
+     "when": [
+      {
+       "metric": "lateNightRatio",
+       "op": ">",
+       "value": 0.2
+      }
+     ],
+     "phrases": [
+      "Midnight tonight",
+      "Before 2 a.m.",
+      "7 days from manufacture (if opened at night, use immediately)",
+      "Until the phone is put down",
+      "Before the next “5 more minutes”",
+      "Before sunrise",
+      "Before tomorrow’s alarm",
+      "7 days from manufacture; 1 day if opened at night",
+      "Until the last video ends",
+      "Next Sunday evening (do not pass midnight)"
+     ]
+    },
+    {
+     "id": "heavy_screen",
+     "priority": 7,
+     "when": [
+      {
+       "metric": "dailyScreenHours",
+       "op": ">=",
+       "value": 6.0
+      }
+     ],
+     "phrases": [
+      "Until the battery reaches 0%",
+      "Before the next charge",
+      "Before the screen time notification",
+      "Until brightness is lowered",
+      "7 days from manufacture (screen time does not carry over)",
+      "Before the next update",
+      "As long as the thumbs hold out",
+      "End of the infinite scroll (unreachable)",
+      "Until the data plan renews",
+      "Until the phone is turned face down"
+     ]
+    },
+    {
+     "id": "default",
+     "priority": 0,
+     "when": [],
+     "phrases": [
+      "7 days from manufacture",
+      "Next Sunday, 8 p.m.",
+      "7 days from issue (restocked next week)",
+      "End of this week",
+      "See LOT week on top",
+      "Before Monday morning",
+      "Until the next batch arrives",
+      "See separately marked date",
+      "Within 7 days (do not freeze)",
+      "168 hours from manufacture"
+     ]
+    }
+   ]
+  }
+ }
+}

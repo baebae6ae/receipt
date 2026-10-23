@@ -63,6 +63,17 @@ class PhraseEngineTest {
     }
 
     @Test
+    fun webDemoUsesTheSamePhraseBank() {
+        // docs/demo 는 tools/sync_web_demo.py 로 복사한다. 앱 문구를 고치고 동기화를 잊으면 여기서 실패한다.
+        val root = System.getProperty("repo.root") ?: ".."
+        for (lang in listOf("ko", "en")) {
+            val app = File(System.getProperty("phrases.dir") ?: "src/main/assets", "phrases_$lang.json").readText()
+            val web = File(root, "docs/demo/phrases_$lang.json").readText()
+            assertEquals("docs/demo/phrases_$lang.json 동기화 필요: python3 tools/sync_web_demo.py", app, web)
+        }
+    }
+
+    @Test
     fun noPersonalityTypeLabels() {
         val banned = listOf("당신은", "형입니다", "유형", "You are", "type of person")
         for (bank in listOf(ko, en)) bank.categories.values.flatMap { it.groups }.flatMap { it.phrases }.forEach { phrase ->
