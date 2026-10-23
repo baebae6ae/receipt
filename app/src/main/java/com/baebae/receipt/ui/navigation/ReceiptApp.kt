@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -21,15 +22,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.baebae.receipt.appContainer
+import com.baebae.receipt.ui.onboarding.OnboardingScreen
 import com.baebae.receipt.ui.screens.ArchiveScreen
 import com.baebae.receipt.ui.screens.HomeScreen
-import com.baebae.receipt.ui.screens.OnboardingScreen
 import com.baebae.receipt.ui.screens.ResultScreen
 import com.baebae.receipt.ui.screens.SettingsScreen
 
 @Composable
 fun ReceiptApp() {
+    val prefs = appContainer().prefs
     val navController = rememberNavController()
+    val startDestination = remember {
+        if (prefs.onboardingDone) Destination.Home.route else Destination.Onboarding.route
+    }
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val showTabs = bottomTabs.any { tab ->
@@ -45,18 +51,17 @@ fun ReceiptApp() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            // 첫 실행 여부 저장은 온보딩 구현 단계에서 붙인다.
-            startDestination = Destination.Onboarding.route,
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(Destination.Onboarding.route) {
-                OnboardingScreen(
-                    onStart = {
-                        navController.navigate(Destination.Home.route) {
-                            popUpTo(Destination.Onboarding.route) { inclusive = true }
-                        }
-                    },
-                )
+                val finish = {
+                    prefs.onboardingDone = true
+                    navController.navigate(Destination.Home.route) {
+                        popUpTo(Destination.Onboarding.route) { inclusive = true }
+                    }
+                }
+                OnboardingScreen(onConnectRealData = finish, onSkip = finish)
             }
             composable(Destination.Home.route) {
                 HomeScreen(onOpenResult = { navController.navigate(Destination.Result.route) })

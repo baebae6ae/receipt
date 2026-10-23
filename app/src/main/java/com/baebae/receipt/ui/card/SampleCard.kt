@@ -6,9 +6,8 @@ import com.baebae.receipt.domain.ItemKeys
 import com.baebae.receipt.domain.LabelCard
 import com.baebae.receipt.domain.NutritionFacts
 import com.baebae.receipt.domain.Phrase
-import java.time.DayOfWeek
+import com.baebae.receipt.util.WeekMath
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 
 /** 디자인 확인용 더미 카드. 실제 데이터가 없을 때(권한 전 미리보기 등)에도 쓴다. */
 object SampleCard {
@@ -19,7 +18,7 @@ object SampleCard {
         expiry: String,
         today: LocalDate = LocalDate.now(),
     ): LabelCard {
-        val start = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val start = WeekMath.weekStartOf(today)
         return LabelCard(
             productName = productName,
             periodStart = start,

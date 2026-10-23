@@ -6,9 +6,6 @@
     <string name="tab_archive">보관함</string>
     <string name="tab_settings">설정</string>
 
-    <string name="onboarding_title">나 성분표</string>
-    <string name="onboarding_body">폰 사용 기록을 모아 매주 \'이번 주의 나\'를 식품 성분표로 발행합니다. 입력할 것은 없습니다.</string>
-    <string name="onboarding_start">시작하기</string>
 
     <string name="home_title">이번 주 성분표</string>
     <string name="archive_title">보관함</string>
@@ -61,7 +58,7 @@
     <string name="template_night">야간 생산분</string>
 
     <!-- 더미 카드 문구 (문구 은행 연결 전 디자인 확인용) -->
-    <string name="sample_product_name">나</string>
+    <string name="default_nickname">나</string>
     <string name="sample_caution_1">새벽 2시 이후 개봉 시 변질 우려가 있으니 즉시 취침하십시오.</string>
     <string name="sample_caution_2">본 제품은 유튜브, 인스타그램을 사용한 제품과 같은 손에서 처리하고 있습니다.</string>
     <string name="sample_storage">직사광선(화면 밝기 최대)을 피해 서늘한 침구에 보관하십시오.</string>
@@ -74,4 +71,59 @@
     <string name="share_chooser_title">성분표 공유</string>
     <string name="export_saved">갤러리에 저장했습니다.</string>
     <string name="export_failed">이미지를 만들지 못했습니다.</string>
+
+    <!-- 온보딩 -->
+    <string name="onboarding_intro_title">이번 주의 나,\n성분표로 발행합니다.</string>
+    <string name="onboarding_intro_body">휴대폰에 이미 남아 있는 기록(앱 사용 시간, 걸음 수, 화면이 꺼져 있던 시간)으로 매주 일요일 저녁 한 장의 성분표를 만듭니다. 입력할 것은 없습니다.</string>
+    <string name="onboarding_privacy_title">기기 밖으로\n나가지 않습니다.</string>
+    <string name="onboarding_privacy_body">· 모든 기록은 이 휴대폰 안에서만 계산합니다.\n· 서버가 없습니다. 어디에도 전송하지 않습니다.\n· 카드에 올라갈 항목은 직접 숨길 수 있습니다.\n\n권한을 켜기 전에, 질문 5개로 먼저 만들어 보세요.</string>
+    <string name="onboarding_next">다음</string>
+    <string name="onboarding_try_quiz">질문 5개로 먼저 해보기</string>
+
+    <!-- 질문형 성분표 -->
+    <string name="quiz_progress">%1$d / %2$d</string>
+    <string name="quiz_q1">평일 하루, 휴대폰 화면을 얼마나 보나요?</string>
+    <string-array name="quiz_q1_options">
+        <item>2시간 이하</item>
+        <item>2~4시간</item>
+        <item>4~6시간</item>
+        <item>6시간 이상</item>
+    </string-array>
+    <string name="quiz_q2">가장 오래 켜 두는 앱은?</string>
+    <string-array name="quiz_q2_options">
+        <item>영상</item>
+        <item>SNS</item>
+        <item>메신저</item>
+        <item>게임</item>
+        <item>웹툰·웹소설</item>
+    </string-array>
+    <string-array name="quiz_app_labels">
+        <item>영상 앱</item>
+        <item>SNS</item>
+        <item>메신저</item>
+        <item>모바일 게임</item>
+        <item>웹툰</item>
+    </string-array>
+    <string name="quiz_q3">보통 몇 시에 잠드나요?</string>
+    <string-array name="quiz_q3_options">
+        <item>자정 전</item>
+        <item>자정~새벽 2시</item>
+        <item>새벽 2시 이후</item>
+    </string-array>
+    <string name="quiz_q4">하루에 얼마나 걷나요?</string>
+    <string-array name="quiz_q4_options">
+        <item>거의 안 걷는다</item>
+        <item>출퇴근·등하교 정도</item>
+        <item>일부러 걷는 편</item>
+    </string-array>
+    <string name="quiz_q5">휴대폰을 얼마나 자주 확인하나요?</string>
+    <string-array name="quiz_q5_options">
+        <item>알림이 올 때만</item>
+        <item>수시로</item>
+        <item>손에서 놓지 않는다</item>
+    </string-array>
+    <string name="quiz_result_title">체험용 성분표 (질문 응답 기준)</string>
+    <string name="quiz_result_real_data_hint">실제 사용 기록으로 만들면 앱 이름, 걸음 수, 수면 시간이 그대로 들어갑니다.</string>
+    <string name="quiz_result_real_data">진짜 내 데이터로 뽑아보기</string>
+    <string name="quiz_result_later">나중에 할게요</string>
 </resources>
