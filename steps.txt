@@ -1,0 +1,39 @@
+shot ci-out/01_onboarding_intro.png
+tap '다음'
+shot ci-out/02_onboarding_privacy.png
+tap '질문 5개로 먼저 해보기'
+shot ci-out/03_quiz_q1.png
+tap '6시간 이상'
+tap '영상'
+tap '새벽 2시 이후'
+tap '거의 안 걷는다'
+tap '손에서 놓지 않는다'
+shot ci-out/04_quiz_result.png
+tap '저장'
+shot ci-out/05_quiz_saved_toast.png
+tap '진짜 내 데이터로 뽑아보기'
+shot ci-out/06_permissions.png
+tap '완료'
+shot ci-out/07_home_live_real_data.png
+found /설정 [0-9.]+%/ in '설정 59%,휴대전화 41%'
+tap '미리 보기 · 공유'
+shot ci-out/08_result_live_story.png
+tap '정사각 1:1'
+shot ci-out/09_result_live_square.png
+tap '크라프트 · 광고'
+shot ci-out/10_reward_dialog.png
+tap '광고 보기'
+shot ci-out/11_rewarded_test_ad.png
+tap ad close 'Close'
+shot ci-out/12_after_reward.png
+OK first
+shot ci-out/01_home_after_publish.png
+tap '개봉하기'
+shot ci-out/02_interstitial_test_ad.png
+tap ad close 'Close'
+shot ci-out/03_published_result.png
+tap '보관함'
+shot ci-out/04_archive.png
+tap '설정'
+shot ci-out/05_settings.png
+OK second
