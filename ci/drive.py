@@ -142,6 +142,11 @@ def main():
         shot("home_live_real_data")
         # 실제 사용 기록 반영 확인: 테스트 전에 연 '설정' 앱이 원재료에 있어야 한다.
         wait_regex(r"설정 [0-9.]+%")
+        # 갓 부팅한 에뮬레이터에는 밤잠 기록이 없으므로 '수면'이 원재료에 나오면 안 된다.
+        fake = [t for t, _, _ in nodes() if re.search(r"수면 [0-9.]+%", t)]
+        if fake:
+            shot("zz_fake_sleep")
+            raise SystemExit(f"FAIL: sleep appears without any night record: {fake}")
         tap("미리 보기 · 공유", scroll=True)
         time.sleep(3)
         shot("result_live_story")

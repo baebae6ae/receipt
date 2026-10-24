@@ -60,12 +60,15 @@ class UsageCollector(context: Context) {
         val sleep = SleepEstimator(dayStart, now)
         var screenOffSince: Long? = null
         var sawScreenEvent = false
+        // 기록이 시작된 시각. 부팅·설치 직후처럼 그 전 기록이 없으면 '그동안 꺼져 있었다'고 가정하지 않는다.
+        var firstEventAt: Long? = null
 
         val events = usm.queryEvents(queryStart, dayEnd)
         val event = UsageEvents.Event()
         while (events.hasNextEvent()) {
             events.getNextEvent(event)
             val t = event.timeStamp
+            if (firstEventAt == null) firstEventAt = t
             when (event.eventType) {
                 ACTIVITY_RESUMED -> tracker.resumed(event.packageName, event.className.orEmpty(), t)
                 ACTIVITY_PAUSED, ACTIVITY_STOPPED -> tracker.paused(event.packageName, event.className.orEmpty(), t)
@@ -77,7 +80,8 @@ class UsageCollector(context: Context) {
                 SCREEN_INTERACTIVE -> {
                     if (t in dayStart until dayEnd) screenOn++
                     // 조회 구간의 첫 화면 이벤트가 '켜짐'이면 그 전까지는 꺼져 있었던 것이다.
-                    val offStart = screenOffSince ?: if (!sawScreenEvent) queryStart else null
+                    // 단, 기록이 있는 구간까지만: 갓 부팅한 기기에서 없던 수면을 만들어 내지 않는다.
+                    val offStart = screenOffSince ?: if (!sawScreenEvent) firstEventAt else null
                     if (offStart != null) sleep.offInterval(offStart, t, ongoing = false)
                     screenOffSince = null
                     sawScreenEvent = true
